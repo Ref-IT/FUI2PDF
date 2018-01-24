@@ -25,7 +25,7 @@ class PDF_Factory{
     private $additionalLaTeXCMD;
     private $result;
     const NECESSARY_FIELDS = [
-        "zahlungsanweisung" => [
+        "zahlungsanweisung-auslagenerstattung" => [
             "command" => [
                 "projektid",
                 "projektname",
@@ -46,7 +46,7 @@ class PDF_Factory{
     function  __construct($input,$domain){
         $this->result = [];
         $this->data = $this->sanitizeInputData($input);
-        if(PDF_FACTORY::$DEBUG)
+        if(PDF_Factory::$DEBUG)
             $this->result["sanitizedInput"] = $this->data;
         if(!isset($this->data['meta']['type']))
             die(json_encode(["status" => "Kein Type gesetzt"]));
@@ -146,6 +146,10 @@ class PDF_Factory{
             case "zahlungsanweisung-auslagenerstattung":
                 $this->filename = "zahlungsanweisung";
                 $this->data["command"]["footerstring"] = "Auslagenerstattung Nr. {$this->data["command"]["id"]}";
+                break;
+            case "zahlungsanweisung-rechnung-zuordnung":
+                $this->filename = "zahlungsanweisung";
+                $this->data["command"]["footerstring"] = "Rechnung Nr. {$this->data["command"]["id"]}";
                 break;
             default:
                 break;
