@@ -6,4 +6,7 @@
 *.out
 *.pdf
 *.synctex.gz
-!/img/*.pdf
+!/img/stura-try.pdf
+/hiddenAPIKey.php
+/parameter.tex
+/.fuse*

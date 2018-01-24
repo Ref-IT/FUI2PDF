@@ -1,0 +1,3 @@
+<?php const API_KEY = "hiddenString";
+const BASEURI = "domain.com";
+const ACCEPTED_SUBDOMAINS = ["a","b"];
