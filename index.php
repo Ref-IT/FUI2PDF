@@ -1,5 +1,5 @@
 <?php
-//Einlesen der JSON Datei
+
 function sanitizeInputData($data){
     $data_new = [];
     foreach($data as $idx => $subarray){
@@ -30,45 +30,43 @@ if(isset($_GET['del'])&& $_GET['del']){
         unlink('zahlungsanweisung.pdf');
     exit;
 }
-
+//Einlesen der JSON Datei
 $data = json_decode(file_get_contents('php://input'), true);
 $domain = $data['meta']['domain'];
 $data = sanitizeInputData($data);
 if($DEBUG)
     var_dump($data);
-//TODO wieder einpflegen
-/*$type = sanitizeString($data['meta']['type']);
+
+$type = sanitizeString($data['meta']['type']);
 $id = sanitizeString($data['data']['id']);
-$beleg_id = sanitizeString($data['meta']['belegid']);*/
+$beleg_id = sanitizeString($data['meta']['belegid']);
 
-
-// Baue den String für den Latex (für dort verwendete for schleife)
-foreach($data['pdfs'] as $key => $value)
-{
-    $PicString = $PicString.($key+1)."/".$value.",";
+// Baue den String für den Latex (für dort verwendete for schleife) + Downloade benötigte pdfs von FUI
+$picString = "";
+if(isset($data['pdf'])){
+    foreach($data['pdfs'] as $bild){
+        $wgetCmd = 'wget "'.$domain.'/FinanzAntragUI/external.php?fname='.$bild.'&id='.$beleg_id.'" -O '.$bild;
+        if($DEBUG)
+            var_dump($wgetCmd);
+        shell_exec($wgetCmd);
+    }
+    foreach($data['pdfs'] as $key => $value){
+        $picString = $picString.($key+1)."/".$value.",";
+    }
+    $picString = substr($picString, 0, -1);
 }
-$PicString = substr($PicString, 0, -1);
+$data['data']['picpaths'] = $picString;
 
-$data['data']['picpaths'] = $PicString;
-
-//Downloade benötigte pdfs
-foreach($data['pdfs'] as $bild)
-{
-    $download[] = $bild;
-    //echo end(array_values($download));
-    $hole = 'wget "'.$domain.'/FinanzAntragUI/external.php?fname='.$bild.'&id='.$beleg_id.'" -O '.$bild;
-    if($DEBUG)
-        var_dump($hole);
-    shell_exec($hole);
-}
 
 //baue komavar String
 $komavarString = "";
-foreach($data["komavar"] as $name => $content){
-    $komavarString .= "\setkomavar{".$name."}{".$content."}";
-}
-if($DEBUG){
-    var_dump($komavarString);
+if(isset($data["komavar"])){
+    foreach($data["komavar"] as $name => $content){
+        $komavarString .= "\setkomavar{".$name."}{".$content."}";
+    }
+    if($DEBUG){
+        var_dump($komavarString);
+    }
 }
 file_put_contents("parameter.tex", $komavarString);
 
@@ -87,16 +85,17 @@ switch ($type) {
 }
 
 $befehl = "";
-
-foreach($data['data'] as $key => $value){
-    $befehl = $befehl . "\\newcommand{\\".$key."}{"."$value"."}";
+if(isset($data["data"])){
+    foreach($data['data'] as $key => $value){
+        $befehl = $befehl . "\\newcommand{\\".$key."}{"."$value"."}";
+    }
 }
-
 $shellcmd =  "pdflatex \"". $befehl . "\\input{".$name."}\"";
 if($DEBUG)
-    var_dump($befehl);
+    var_dump($shellcmd);
 $ret =  shell_exec($shellcmd);
 shell_exec($shellcmd);
+
 if($DEBUG)
     var_dump($ret);
 if(!$DEBUG){
@@ -105,7 +104,7 @@ if(!$DEBUG){
 }
 readfile($name.".pdf");
 
-foreach($download as $d){
+foreach($data["pdf"] as $d){
     if(!$DEBUG)
         unlink($d);
 }
