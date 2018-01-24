@@ -1,0 +1,218 @@
+%%% Template originaly created by Karol Kozioł (mail@karol-koziol.net) and modified for ShareLaTeX use
+
+
+
+
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{ngerman}
+\usepackage[tx]{sfmath}
+\usepackage{calc}
+\usepackage{lastpage}
+%\usepackage{ifthen}
+\usepackage{xifthen}
+\usepackage{multicol}
+\renewcommand\familydefault{\sfdefault}
+\usepackage{tgheros}
+\usepackage{intcalc}
+
+\usepackage{amsmath,amssymb,amsthm,textcomp}
+\usepackage{enumerate}
+\usepackage{multicol}
+\usepackage{tikz}
+
+\usepackage{geometry}
+\geometry{total={210mm,297mm},
+left=25mm,right=25mm,%
+bindingoffset=0mm, top=20mm,bottom=20mm}
+
+
+%\newcommand{\ID}{125}
+%\newcommand{\IBAN}{DE08 1001 0010 0745 3161 07}
+%\newcommand{\empfaenger}{Michael Braun (jr)}
+%\newcommand{\hv}{Lukas Staab am 2017-10-20}
+%\newcommand{\kv}{Lukas Staab am 2017-10-20}
+%\newcommand{\projektname}{TestTestTest999}
+%\newcommand{\recht}{Referat Ehrenamt/2017-01-16 (StuRa: 1234)}
+%\newcommand{\betrag}{660}
+%\newcommand{\posten}{B1,B1,B1,B2}
+%\newcommand{\einnahmen}{0,0,0,0}
+%\newcommand{\ausgaben}{10,500,50,100}
+%\newcommand{\hhptitel}{0 1001 2,0 2115 2,0 2231 2,0 2231 2}
+%\newcommand{\picpaths}{1/59e93cfbbea7c.pdf}
+
+\linespread{1.3}
+
+\newcommand{\linia}{\rule{\linewidth}{0.5pt}}
+
+% custom theorems if needed
+\newtheoremstyle{mytheor}
+    {1ex}{1ex}{\normalfont}{0pt}{\scshape}{.}{1ex}
+    {{\thmname{#1 }}{\thmnumber{#2}}{\thmnote{ (#3)}}}
+
+\theoremstyle{mytheor}
+\newtheorem{defi}{Definition}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace{2ex}
+{\huge \textsc{\@title}}
+\vspace{1ex}
+\\
+\linia\\
+\@author \hfill \@date
+\vspace{4ex}
+\end{center}
+}
+\makeatother
+%%%
+
+% custom footers and headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{\footerstring}
+\cfoot{}
+\rfoot{Seite \thepage{} von \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%
+% all section titles centered and bolded
+\usepackage{sectsty}
+\allsectionsfont{\centering\bfseries\large}
+%
+% add section label
+\renewcommand\thesection{}
+%
+
+%%%----------%%%----------%%%----------%%%----------%%%
+
+\begin{document}
+
+\title{Zahlungsanweisung}
+
+\author{StuRa der TU Ilmenau}
+
+\date{nach ThürStudFVO §12 (2)}
+
+\maketitle
+
+\section{Allgemeine Angaben}
+
+\begin{enumerate}[I]
+\item \textbf{Zahlungsempfänger}\hfill \empfaenger
+\item \textbf{IBAN} \hfill\iban
+\item \textbf{Gesamtbetrag} \hfill\betrag{} EUR
+\item \textbf{Rechtsgrundlage} \hfill \ifthenelse{\isempty\recht}{\parbox[b]{0.33\linewidth}{\strut{\hrule}}}{\recht}
+\item \textbf{Zugehöriges Projekt} \hfill [\projektid] \projektname
+\item \textbf{Datum der Auszahlung} \hfill \ifthenelse{\isempty{\datumauszahlung{}}}{\datumauszahlung}{\parbox[b]{0.05\linewidth}{\strut{\hrule}}.\parbox[b]{0.05\linewidth}{\strut{\hrule}}.\the\year}
+\end{enumerate}
+\vspace{1cm}
+\parbox[b]{0.4\linewidth}{% size of the first signature box
+    \strut 
+    \textbf{Sachliche Richtigkeit} \\[1.25cm]% This 2cm is the space for the signature under the names
+    \hrule
+    \vspace{0.25cm}
+    (\ifthenelse{\isempty \hv}{Haushaltsverantwortliche/r}{\hv})} 
+\hspace{1cm} % distance between the two signature blocks 
+\parbox[b]{0.4\linewidth}{% ...and the second one
+    \strut 
+    \textbf{Rechnerische Richtigkeit} \\[1.25cm]% This 2cm is the space for the signature under the names
+    \hrule 
+    \vspace{0.25cm}
+    (\ifthenelse{\isempty \kv}{Kassenverantwortliche/r}{\kv})}
+    \par\vspace{1cm} 
+
+\tikzset{
+  font={\fontsize{29pt}{12}\selectfont}}
+%Aufschlüsselung der Belege
+\section{Aufschlüsselung}
+\begin{multicols}{4}
+	\begin{flushright}	
+	\noindent \textbf{Beleg} \\
+	\foreach \zeile in \posten {
+		 \zeile \\
+	}	
+	\end{flushright}
+	\begin{flushright}
+	\noindent\textbf{HHP-Titel} \\
+	\foreach \zeile in \hhptitel {
+		 \zeile  \\
+	}
+	\end{flushright}
+	\begin{flushright}
+	\noindent \textbf{Einnahmen} \\ 
+	\foreach \zeile in \einnahmen {
+		\zeile{} EUR\\
+	}
+	\end{flushright}
+	\begin{flushright}
+	\noindent \textbf{Ausgaben} \\
+	\foreach \zeile in \ausgaben {
+		 \zeile{} EUR\\
+	}
+	\end{flushright}
+	
+\end{multicols}
+\newpage
+%Belege
+\tikzset{
+  font={\fontsize{29pt}{12}\selectfont}}
+\foreach \nr/\picname in \picpaths
+{
+	%% bei mehrseitigen Belegen erst alle originale und dann alle Kopien 
+	%% bei einseitigen Belegen, beides auf einer Seite
+	
+	\pdfximage{\picname}
+    %Switch case der Anzahl Seiten des Beleges
+    
+                
+    \begin{tikzpicture}[remember picture,overlay]
+    	 %rechteck
+         \draw [draw=black,line width=5mm,opacity=0.3] (16.5,-10) rectangle (-1,-1.25);
+        	%belegnummer		
+		\node [opacity=1,anchor=north west,xshift=0.95\textwidth, yshift=1.25cm] {B\nr};
+			%text im Rechteck
+		\node [opacity=0.3,anchor=north west, yshift=-2.5cm] {Hier unten abgebildeten };
+		\node [opacity=0.3,anchor=north west, yshift=-3.6cm] {Beleg \nr{} antackern (Original)};
+		\node [opacity=0.3,anchor=north west, yshift=-5.5cm] {Falls dieser Beleg ein A4 Beleg };
+		\node [opacity=0.3,anchor=north west, yshift=-6.6cm] {ist, hefte das Original vor};
+		\node [opacity=0.3,anchor=north west, yshift=-7.7cm] {dieser Seite ab};
+         \node [anchor =north east, inner sep=0pt,outer sep=0pt,yshift=-0.45\paperheight] at (current page.north east) {\fbox{\includegraphics[page=1,angle=90,width=0.925\paperwidth,height=0.45\paperheight]{\picname}}};
+	        \node [rotate=90, opacity=0.75,anchor=north west,xshift=-0.73\paperheight,yshift=2.92cm]{ Beleg \nr - Seite 1};
+    \end{tikzpicture}
+    \newpage
+    \ifthenelse{\the\pdflastximagepages > 1}{
+        	\foreach \index in {2,...,\the\pdflastximagepages}
+				{%iteriere über die Seiten des Beleg pdfs
+				\ifthenelse{\not \isodd{\index}}{
+					\begin{tikzpicture}[remember picture,overlay]  
+   						\node [opacity=1,anchor=north west,xshift=0.95\textwidth, yshift=1.75cm] {B\nr}; 
+      					\node [anchor =north east, inner sep=0pt,outer sep=0pt,yshift=-2cm] at (current page.north east) {\fbox{\includegraphics[page=\index,angle=90,width=0.925\paperwidth,height=0.415\paperheight]{\picname}}};
+		    			\node [rotate=90, opacity=0.75,anchor=north west,xshift=-0.275\paperheight,yshift=2.92cm] { Seite \index};
+  					\end{tikzpicture}
+				}{ %else unterer Teil des Blattes
+					\begin{tikzpicture}[remember picture,overlay]  
+      					\node [anchor =north east, inner sep=0pt,outer sep=0pt,yshift=-14.55cm] at (current page.north east) {\fbox{\includegraphics[page=\index,angle=90,width=0.925\paperwidth,height=0.415\paperheight]{\picname}}};
+		    			\node [rotate=90, opacity=0.75,anchor=north west,xshift=-0.65\paperheight,yshift=2.92cm] { Seite \index};
+  					\end{tikzpicture}
+					\newpage
+				} %if end
+   		  		
+		}{} %else end if page > 1
+
+    \newpage
+	}
+}
+
+
+\end{document}
