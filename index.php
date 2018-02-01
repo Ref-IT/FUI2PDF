@@ -1,10 +1,9 @@
 <?php
-error_reporting( E_ALL | E_STRICT);
-ini_set('display_errors', 1);
+
 include_once("hiddenAPIKey.php");
+
 //Einlesen der JSON Datei
 $tmp = file_get_contents('php://input');
-//$tmp = '{"command":{"test":"test"},"meta":{"subdomain":"box","api":"hiddenString","type":"zahlungsanweisung"}}';
 $data = json_decode($tmp, true);
 if(!(is_array($data) && isset($data["meta"]) && isset($data["meta"]["subdomain"])))
     die(json_encode(["status" => "Fehler bei der Datenübertragung"]));
@@ -14,14 +13,16 @@ $domain = "https://".$data["meta"]["subdomain"].".".BASEURI;
 if(!isset($data["meta"]["apikey"]) || $data["meta"]["apikey"] !== API_KEY)
     die(json_encode(["status" => "Kein zulässiger API Key!"]));
 $pdfFac = new PDF_Factory($data,$domain);
-echo json_encode($pdfFac->getResult());
+echo json_encode(/*["ip" => $_SERVER['REMOTE_ADDR'],*/$pdfFac->getResult()/*]*/);
+exit(0);
 
 class PDF_Factory{
-    private static $DEBUG = true;
+    private static $DEBUG = false;
+    private static $reportLaTeXError = true;
     private $data;
     private $filename;
     private $pdfBinary;
-    private $komavarString;
+    private $komaVarString;
     private $additionalLaTeXCMD;
     private $result;
     const NECESSARY_FIELDS = [
@@ -41,6 +42,42 @@ class PDF_Factory{
             ],
 
         ],
+        "zahlungsanweisung-belege" =>[
+            "beta"
+        ],
+        "pruefbescheid" =>[
+            "komaVar" => [
+                "vereinName",
+                "vereinPerson",
+                "vereinAdresse",
+                "vereinOrt",
+                "datum",
+                "projName",
+                "projAbrechnungDatum",
+                "sturaBetrag",
+                "sturaVorkasse",
+                "sturaAbrechnung",
+                "iban",
+            ],
+        ],
+        "bewilligungsbescheid" =>[
+            "komaVar" => [
+                "vereinName",
+                "vereinPerson",
+                "vereinAdresse",
+                "vereinOrt",
+                "datum",
+                "projId",
+                "projName",
+                "projDauer",
+                "sturaBeschluss",
+                "sturaBetrag",
+                "sturaVorkasse",
+                "iban",
+            ]
+        ],
+
+
     ];
 
     function  __construct($input,$domain){
@@ -61,11 +98,11 @@ class PDF_Factory{
             $beleg_id = $this->data['meta']['belegid'];
             $this->downloadPDFs($this->data['pdfs'],$beleg_id,$domain);
         }
-        $this->komavarString = "";
-        if(isset($this->data["komavar"])){
-            $this->setKomaVars($this->data["komavar"]);
+        $this->komaVarString = "";
+        if(isset($this->data["komaVar"])){
+            $this->setKomaVars($this->data["komaVar"]);
         }
-        file_put_contents("parameter.tex",$this->komavarString);
+        file_put_contents("parameter.tex",$this->komaVarString);
         $this->additionalLaTeXCMD = "";
         if(isset($this->data["command"])){
             foreach($this->data["command"] as $key => $value){
@@ -132,14 +169,14 @@ class PDF_Factory{
         $this->data["command"]["picpaths"] =  $picString;
     }
     private function setKomaVars($komaVars){
-        $komavarString = "";
+        $tmp = "";
         foreach($komaVars as $name => $content){
-            $komavarString .= "\setkomavar{".$name."}{".$content."}". PHP_EOL;
+            $tmp .= "\setkomavar{".$name."}{".$content."}". PHP_EOL;
         }
         if(PDF_FACTORY::$DEBUG){
-            $this->result["komaVarString"] = $komavarString;
+            $this->result["komaVarString"] = $tmp;
         }
-        return $komaVars;
+        $this->komaVarString = $tmp;
     }
     private function generateTypeSpecificContent($type){
         switch($type){
@@ -151,18 +188,36 @@ class PDF_Factory{
                 $this->filename = "zahlungsanweisung";
                 $this->data["command"]["footerstring"] = "Rechnung Nr. {$this->data["command"]["id"]}";
                 break;
+            case "zahlungsanweisung-belege":
+                break;
+            case "bewilligungsbescheid":
+                $this->filename = "briefkopf";
+                $this->data["command"]["filename"] = "bewilligung";
+                $this->data["command"]["id"] = $this->data["meta"]["id"];
+                $this->data["komaVar"]["titel"] = "Bewilligungsbescheid";
+                $this->data["komaVar"]["anlagen"] = " - abgestimmter Finanzplan";
+                break;
+            case "pruefbescheid":
+                $this->filename = "briefkopf";
+                $this->data["command"]["filename"] = "auszahlung";
+                $this->data["command"]["id"] = $this->data["meta"]["id"];
+                $vk = floatval($this->data["komaVar"]["sturaVorkasse"]);
+                $ka = floatval($this->data["komaVar"]["sturaAbrechnung"]);
+                if($vk > $ka){
+                    $this->data["command"]["forderung"] = "true";
+                    $this->data["komaVar"]["betreff"] = "Rückforderungsbescheid";
+                }else{
+                    $this->data["command"]["forderung"] = "false";
+                    $this->data["komaVar"]["betreff"] = "Auszahlungsbescheid";
+                }
+                $this->data["komaVar"]["sturaRest"] = abs($vk-$ka);
+
+                break;
             default:
                 break;
         }
-        /*case "auslagenerstattung":
-        $name = "zahlungsanweisung";
-        $data['data']['footerstring'] = "Auslagenerstattung Nr. {$id}";
-        break;
-        case "rechnung-zuordnung":
-        $name = "zahlungsanweisung";
-        $data['data']['footerstring'] = "Rechnung Nr. {$id}";
-        break;*/
     }
+
     private function checkIntegrity($type){
         if(!isset(PDF_Factory::NECESSARY_FIELDS[$type])) return "Type: $type nicht bekannt";
         foreach(PDF_Factory::NECESSARY_FIELDS[$type] as $group => $neededContent){
@@ -181,16 +236,27 @@ class PDF_Factory{
         shell_exec($shellcmd);
         if(PDF_FACTORY::$DEBUG){
             $this->result["TeXcmd"] = $shellcmd;
-            $this->result["pdflatexOutput"] = substr($ret,-150);
-            if(strpos($ret, 'no output PDF file produced') !== false){
-                $this->result["pdflatexLog"] = substr(file_get_contents($this->filename.".log"),-1000);
+            $this->result["pdflatexOutput"] = substr($ret,-200);
+            if(strpos($ret, 'no output PDF file produced') !== false && file_exists($this->filename.".log")){
+                $this->result["pdflatexLog"] = substr(file_get_contents($this->filename.".log"),-2000);
             }
         }
-        if(file_exists($this->filename.".pdf")){
-            $this->result["status"] = "ok";
+        if(strpos($ret, 'no output PDF file produced') === false && file_exists($this->filename.".pdf")){
+            if(PDF_Factory::$DEBUG){
+                $this->result["status"] = "debug-on-pdf-ok";
+            }else{
+                $this->result["status"] = "ok";
+            }
+
             $this->result["pdf"] = base64_encode(file_get_contents($this->filename.".pdf"));
         }else{
             $this->result["status"] = "Datei konnte nicht erstellt werden";
+            if(PDF_Factory::$reportLaTeXError){
+                $this->result["pdflatexOutput"] = substr($ret,-200);
+                if(strpos($ret, 'no output PDF file produced') !== false && file_exists($this->filename.".log")){
+                    $this->result["pdflatexLog"] = substr(file_get_contents($this->filename.".log"),-2000);
+                }
+            }
         }
     }
     public function getResult(){
