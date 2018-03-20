@@ -2,16 +2,17 @@ Das Referat Finanzen hat die eingereichte Projektabrechnung geprüft.
 
 \begin{enumerate}[label=\Roman*]
 \item \textbf{Projekt}\hfill [\usekomavar{projId}] \usekomavar{projName}
-\item \textbf{Abrechnung vom} \hfill \usekomavar{projAbrechnungDatum}
+%\item \textbf{Abrechnung vom} \hfill \usekomavar{projAbrechnungDatum}
 \item \textbf{Bewilligter Betrag} \hfill \usekomavar{sturaBetrag} EUR 
 \item \textbf{Davon auf Vorschuss} \hfill \usekomavar{sturaVorkasse} EUR
 \end{enumerate}
-Folgende Beanstandungen wurden bei der Prüfung der eingegangenen Abrechnung erteilt:
 \begin{enumerate}[label=\Roman*,resume]
-\item fasd f
-\begin{itemize}
-\item keine
-\end{itemize}
-\item \textbf{Davon korrekt abgerechnet} \hfill \usekomavar{sturaAbrechnung} EUR
+    %\item fasd f
+    %\begin{itemize}
+    %\item keine
+    %\end{itemize}
+    \item \textbf{Korrekt abgerechnet} \hfill \usekomavar{sturaAbrechnung} EUR
 \end{enumerate}
-\ifthenelse{\equal{\forderung}{true}}{Bitte überweisen Sie den Betrag in Höhe von \textbf{\usekomavar{sturaRest} EUR} EUR auf das unten stehende Konto des Studierendenrates.}{Der Betrag in Höhe von \textbf{\usekomavar{sturaRest} EUR} wird in den nächsten 10 Werktagen auf das Konto überwiesen, das auf der Abrechnung angegeben wurde.}
+Folgende Beanstandungen wurden bei der Prüfung der eingegangenen Abrechnung erteilt:
+\newpage
+\ifthenelse{\equal{\forderung}{true}}{Bitte überweisen Sie den Betrag in Höhe von \textbf{\usekomavar{sturaRest} EUR} EUR auf das unten stehende Konto des Studierendenrates.}{Der Betrag in Höhe von \textbf{\usekomavar{sturaRest} EUR} wird in den nächsten 10 Werktagen auf das Konto überwiesen, das auf der Abrechnung angegeben wurde (\usekomavar{iban}), falls nicht schon geschehen.}

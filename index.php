@@ -42,7 +42,7 @@ class PDF_Factory{
             ],
 
         ],
-        "zahlungsanweisung-belege" =>[
+        "zahlungsanweisung-belege" => [
             "beta"
         ],
         "pruefbescheid" =>[
@@ -76,8 +76,6 @@ class PDF_Factory{
                 "iban",
             ]
         ],
-
-
     ];
 
     function  __construct($input,$domain){
@@ -92,7 +90,7 @@ class PDF_Factory{
             die(json_encode(["status" => "Fehler -  $check"]));
 
         $this->generateTypeSpecificContent($this->data['meta']['type']);
-
+        $this->convertFloats();
         //download PDF
         if(isset($this->data["pdfs"]) && isset($this->data["meta"]["belegid"])){
             $beleg_id = $this->data['meta']['belegid'];
@@ -109,6 +107,8 @@ class PDF_Factory{
                 $this->additionalLaTeXCMD = $this->additionalLaTeXCMD . "\\newcommand{\\".$key."}{"."$value"."}";
             }
         }
+    
+    
         $this->generatePDF();
     }
 
@@ -142,6 +142,7 @@ class PDF_Factory{
         $ret =  preg_replace(Array("#ä#","#ö#","#ü#","#Ä#","#Ö#","#Ü#","#ß#", "#[^A-Za-z0-9\+\?/\-:\(\)\.,' ]#"), Array("ae","oe","ue","Ae","Oe","Ue","sz","."), $name);
         return stripcslashes($ret);
     }
+    
     /*
     ** @param filnames has multiple filenames
     ** @param beleg_id to one beleg_id
@@ -202,15 +203,15 @@ class PDF_Factory{
                 $this->data["command"]["filename"] = "auszahlung";
                 $this->data["command"]["id"] = $this->data["meta"]["id"];
                 $vk = floatval($this->data["komaVar"]["sturaVorkasse"]);
-                $ka = floatval($this->data["komaVar"]["sturaAbrechnung"]);
-                if($vk > $ka){
+                $abr = floatval($this->data["komaVar"]["sturaAbrechnung"]);
+                if ($vk > $abr){
                     $this->data["command"]["forderung"] = "true";
-                    $this->data["komaVar"]["betreff"] = "Rückforderungsbescheid";
+                    $this->data["komaVar"]["titel"] = "Rückforderungsbescheid";
                 }else{
                     $this->data["command"]["forderung"] = "false";
-                    $this->data["komaVar"]["betreff"] = "Auszahlungsbescheid";
+                    $this->data["komaVar"]["titel"] = "Auszahlungsbescheid";
                 }
-                $this->data["komaVar"]["sturaRest"] = abs($vk-$ka);
+                $this->data["komaVar"]["sturaRest"] = abs($vk - $abr);//abs($vk-$ka);
 
                 break;
             default:
@@ -230,6 +231,20 @@ class PDF_Factory{
         }
         return true;
     }
+    
+    private function convertFloats(){
+        foreach (array_keys($this->data["komaVar"]) as $key){
+            if (is_numeric($this->data["komaVar"][$key]) && (strpos($this->data["komaVar"][$key], ".") !== false)){
+                $this->data["komaVar"][$key] = number_format($this->data["komaVar"][$key], 2, ",", " ");
+            }
+        }
+        foreach (array_keys($this->data["command"]) as $key){
+            if (is_numeric($this->data["command"][$key]) && (strpos($this->data["command"][$key], ".") !== false)){
+                $this->data["command"][$key] = number_format($this->data["command"][$key], 2, ",", " ");
+            }
+        }
+    }
+    
     private function generatePDF(){
         $shellcmd =  "pdflatex \"". $this->additionalLaTeXCMD . "\\input{".$this->filename."}\"";
         $ret =  shell_exec($shellcmd);

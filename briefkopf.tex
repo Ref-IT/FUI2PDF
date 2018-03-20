@@ -2,51 +2,51 @@
 %---------------------------------------------------------------------------
 \documentclass%%
 %---------------------------------------------------------------------------
-  [fontsize=12pt,%%          Schriftgroesse
+[fontsize=12pt,%%          Schriftgroesse
 %---------------------------------------------------------------------------
 % Satzspiegel
-   paper=a4,%%               Papierformat
-   enlargefirstpage=on,%%    Erste Seite anders
-   pagenumber=foot,%%   Seitenzahl oben mittig  
+paper=a4,%%               Papierformat
+enlargefirstpage=on,%%    Erste Seite anders
+pagenumber=foot,%%   Seitenzahl oben mittig
 %---------------------------------------------------------------------------
 % Layout
-   headsepline=off,%%        Linie unter der Seitenzahl
-   parskip=half,%%           Abstand zwischen Absaetzen
-   firsthead=on,%%           display header on first page
-   firstfoot=off,%%           display footer on first page
+headsepline=off,%%        Linie unter der Seitenzahl
+parskip=half,%%           Abstand zwischen Absaetzen
+firsthead=on,%%           display header on first page
+firstfoot=off,%%           display footer on first page
 %---------------------------------------------------------------------------
 % Was kommt in den Briefkopf und in die Anschrift
-   fromalign=right,%%        Plazierung des Briefkopfs
-   fromphone=on,%%           Telefonnummer im Absender
-   fromrule=off,%%     Linie im Absender (aftername, afteraddress)
-   fromfax=on,%%             Faxnummer
-   fromemail=on,%%           Emailadresse
-   fromurl=on,%%             Homepage
-   fromlogo=on,%%            Firmenlogo
-   addrfield=on,%%           Adressfeld fuer Fensterkuverts
-   backaddress=on,%%         ...und Absender im Fenster
-   subject=untitled,%%  Plazierung der Betreffzeile
-   locfield=narrow,%%        zusaetzliches Feld fuer Absender
-   foldmarks=on,%%           Faltmarken setzen
-   numericaldate=off,%%      Datum numerisch ausgeben
-   refline=narrow,%%         Geschaeftszeile im Satzspiegel
-   firstfoot=on,%%           Footerbereich
+fromalign=right,%%        Plazierung des Briefkopfs
+fromphone=on,%%           Telefonnummer im Absender
+fromrule=off,%%     Linie im Absender (aftername, afteraddress)
+fromfax=on,%%             Faxnummer
+fromemail=on,%%           Emailadresse
+fromurl=on,%%             Homepage
+fromlogo=on,%%            Firmenlogo
+addrfield=on,%%           Adressfeld fuer Fensterkuverts
+backaddress=on,%%         ...und Absender im Fenster
+subject=untitled,%%  Plazierung der Betreffzeile
+locfield=narrow,%%        zusaetzliches Feld fuer Absender
+foldmarks=on,%%           Faltmarken setzen
+numericaldate=off,%%      Datum numerisch ausgeben
+refline=narrow,%%         Geschaeftszeile im Satzspiegel
+firstfoot=on,%%           Footerbereich
 %---------------------------------------------------------------------------
 % Formatierung
-   draft=off%%                Entwurfsmodus
+draft=off%%                Entwurfsmodus
 ]{scrlttr2}
 %---------------------------------------------------------------------------
-\usepackage[english, ngerman]{babel} 
+\usepackage[english, ngerman]{babel}
 %\usepackage{scrpage2}
 %\pagestyle{scrheadings}
 %\clearscrheadfoot 
 \usepackage{ wasysym }
 \usepackage{url}
 \usepackage{lmodern}
-\usepackage{enumitem} 
-\usepackage[utf8]{inputenc} 
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
 % symbols: (cell)phone, email
-\RequirePackage{marvosym} 
+\RequirePackage{marvosym}
 % for gray color in header
 \RequirePackage{color}
 \usepackage[T1]{fontenc}
@@ -64,173 +64,173 @@
 \setkomafont{fromaddress}{\small\sffamily\mdseries\color{mygray}}
 %---------------------------------------------------------------------------
 \begin{document}
-%---------------------------------------------------------------------------
-% Briefstil und Position des Briefkopfs
-\LoadLetterOption{DIN} %% oder: DINmtext, SN, SNleft, KOMAold.
-\makeatletter
-\@setplength{sigbeforevskip}{18mm} % Abstand der Signatur von dem closing
-\@setplength{firstheadvpos}{17mm} % Abstand des Absenderfeldes vom Top
-\@setplength{firstfootvpos}{265mm} % Abstand des Footers von oben
-\@setplength{firstheadwidth}{\paperwidth}
-\@setplength{locwidth}{70mm}   % Breite des Locationfeldes
-\@setplength{locvpos}{60mm}    % Abstand des Locationfeldes von oben
-\ifdim \useplength{toaddrhpos}>\z@
-  \@addtoplength[-2]{firstheadwidth}{\useplength{toaddrhpos}}
-\else
-  \@addtoplength[2]{firstheadwidth}{\useplength{toaddrhpos}}
-\fi
-\@setplength{foldmarkhpos}{6.5mm}
-\makeatother
-%---------------------------------------------------------------------------
-% Farben werden hier definiert
-% define gray for header
-\definecolor{mygray}{gray}{.55}
-% define blue for address
-\definecolor{myblue}{rgb}{0.25,0.45,0.75}
+    %---------------------------------------------------------------------------
+    % Briefstil und Position des Briefkopfs
+    \LoadLetterOption{DIN} %% oder: DINmtext, SN, SNleft, KOMAold.
+    \makeatletter
+    \@setplength{sigbeforevskip}{18mm} % Abstand der Signatur von dem closing
+    \@setplength{firstheadvpos}{17mm} % Abstand des Absenderfeldes vom Top
+    \@setplength{firstfootvpos}{265mm} % Abstand des Footers von oben
+    \@setplength{firstheadwidth}{\paperwidth}
+    \@setplength{locwidth}{70mm}   % Breite des Locationfeldes
+    \@setplength{locvpos}{60mm}    % Abstand des Locationfeldes von oben
+    \ifdim \useplength{toaddrhpos}>\z@
+    \@addtoplength[-2]{firstheadwidth}{\useplength{toaddrhpos}}
+    \else
+    \@addtoplength[2]{firstheadwidth}{\useplength{toaddrhpos}}
+    \fi
+    \@setplength{foldmarkhpos}{6.5mm}
+    \makeatother
+    %---------------------------------------------------------------------------
+    % Farben werden hier definiert
+    % define gray for header
+    \definecolor{mygray}{gray}{.55}
+    % define blue for address
+    \definecolor{myblue}{rgb}{0.25,0.45,0.75}
 
-%---------------------------------------------------------------------------
-% Absender Daten
-\setkomavar{fromlogo}{\includegraphics[height=3.5cm]{img/stura-try.pdf}}
-\setkomavar{fromname}{Studierendenrat der TU Ilmenau}
-\setkomavar{fromaddress}{Max-Planck-Ring 7\\98693 Ilmenau}
-\setkomavar{fromphone}[\phone~]{03677\,/\,69\,-\,1914}
-\setkomavar{fromfax}[\FAX~]{03677\,/\,69\,-\,1193}
-\setkomavar{fromemail}[\Letter~]{ref-finanzen@tu-ilmenau.de}
-\setkomavar{fromurl}[\Mundus~]{https://stura.tu-ilmenau.de}
-%\setkomafont{fromaddress}{\small\rmfamily\mdseries\slshape\color{myblue}}
+    %---------------------------------------------------------------------------
+    % Absender Daten
+    \setkomavar{fromlogo}{\includegraphics[height=3.5cm]{img/stura-try.pdf}}
+    \setkomavar{fromname}{Studierendenrat der TU Ilmenau}
+    \setkomavar{fromaddress}{Max-Planck-Ring 7\\98693 Ilmenau}
+    \setkomavar{fromphone}[\phone~]{03677\,/\,69\,-\,1914}
+    \setkomavar{fromfax}[\FAX~]{03677\,/\,69\,-\,1193}
+    \setkomavar{fromemail}[\Letter~]{ref-finanzen@tu-ilmenau.de}
+    \setkomavar{fromurl}[\Mundus~]{https://stura.tu-ilmenau.de}
+    %\setkomafont{fromaddress}{\small\rmfamily\mdseries\slshape\color{myblue}}
 
-\setkomavar{backaddressseparator}{, }
-%\setkomavar{backaddress}{StuRa der TU Ilmenau, Felderhof 112, 40880 Ratingen} % wenn erwünscht kann hier eine andere Backaddress eingetragen werden
-\setkomavar{signature}{\usekomavar{hv} \\ Haushaltsverantwortliche/r \\des Studierendenrates der TU Ilmenau}
-% signature same indention level as rest
-\renewcommand*{\raggedsignature}{\raggedright}
-\setkomavar{location}{\raggedleft
-\vspace{1cm}
-%Rechnungsnummer XZY hier gut platziert
-}%%Zusätzliches Label Rechts von der Anschrift
+    \setkomavar{backaddressseparator}{, }
+    %\setkomavar{backaddress}{StuRa der TU Ilmenau, Felderhof 112, 40880 Ratingen} % wenn erwünscht kann hier eine andere Backaddress eingetragen werden
+    \setkomavar{signature}{\usekomavar{hv} \\ Haushaltsverantwortliche/r \\des Studierendenrates der TU Ilmenau}
+    % signature same indention level as rest
+    \renewcommand*{\raggedsignature}{\raggedright}
+    \setkomavar{location}{\raggedleft
+    \vspace{1cm}
+    %Rechnungsnummer XZY hier gut platziert
+    }%%Zusätzliches Label Rechts von der Anschrift
 
-% Anlage neu definieren
-\renewcommand{\enclname}{Anlagen}
-\setkomavar{enclseparator}{: }
-%---------------------------------------------------------------------------
-% Seitenstil
-% pagenumber=footmiddle
-\pagestyle{myheadings}%% keine Header in der Kopfzeile bzw. plain
-\markboth{\usekomavar{fromname}}{\usekomavar{titel}}
-\pagenumbering{arabic}
-%---------------------------------------------------------------------------
-%---------------------------------------------------------------------------
-\setkomavar{firstfoot}{
-\centering{Seite \arabic{page} von \pageref{LastPage}}\\
-\footnotesize%
-\rule[3pt]{\textwidth}{.4pt} \\
-\begin{tabular}[t]{l@{}}% 
-\usekomavar{fromname}\\
-\usekomavar{fromaddress}\\
-\end{tabular}%
-\hfill
-\begin{tabular}[t]{l@{}}%
-  \usekomavar[\phone~]{fromphone}\\
-   \usekomavar[\Letter~]{fromemail}\\
-\end{tabular}%
-\ifkomavarempty{frombank}{}{%
-\hfill
-\begin{tabular}[t]{l@{}}%
-\usekomavar{frombank}
-\end{tabular}%
-}%
-}%
-\setkomavar{nextfoot}{
-\parbox[t][1in][c]{\textwidth}{
-\centering{Seite \arabic{page} von \pageref{LastPage}}\\
-\rule[3pt]{\textwidth}{.4pt} \\
-\footnotesize
-\begin{tabular}[t]{l@{}}%
-\usekomavar{fromname}\\
-\usekomavar{fromaddress}\\
-\end{tabular}%
-\hfill
-\begin{tabular}[t]{l@{}}%
-  \usekomavar[\phone~]{fromphone}\\
-   \usekomavar[\Letter~]{fromemail}\\
-\end{tabular}%
-\ifkomavarempty{frombank}{}{%
-\hfill
-\begin{tabular}[t]{l@{}}%
-\usekomavar{frombank}
-\end{tabular}%
-}}}
-%---------------------------------------------------------------------------
-% Bankverbindung
-\setkomavar{frombank}{IBAN: DE88840510101113003290 \\BIC: HELADEF1ILK }
-%---------------------------------------------------------------------------
-\newkomavar{vereinName}
-\newkomavar{vereinPerson}
-\newkomavar{vereinAdresse}
-\newkomavar{vereinOrt}
-\newkomavar{datum}
-\newkomavar{projId}
-\newkomavar{projName}
-\newkomavar{projDauer}
-\newkomavar{projAbrechnungDatum}
-\newkomavar{sturaBeschluss}
-\newkomavar{sturaBetrag}
-\newkomavar{sturaVorkasse}
-\newkomavar{sturaTitel}
-\newkomavar{anlagen}
-\newkomavar{hv}
-\newkomavar{betreff}
-\newkomavar{sturaAbrechnung}
-\newkomavar{sturaRest}
-\newkomavar{iban}
-\newkomavar{titel}
+    % Anlage neu definieren
+    \renewcommand{\enclname}{Anlagen}
+    \setkomavar{enclseparator}{: }
+    %---------------------------------------------------------------------------
+    % Seitenstil
+    % pagenumber=footmiddle
+    \pagestyle{myheadings}%% keine Header in der Kopfzeile bzw. plain
+    \markboth{\usekomavar{fromname}}{\usekomavar{titel}}
+    \pagenumbering{arabic}
+    %---------------------------------------------------------------------------
+    %---------------------------------------------------------------------------
+    \setkomavar{firstfoot}{
+    \centering{Seite \arabic{page} von \pageref{LastPage}}\\
+    \footnotesize%
+    \rule[3pt]{\textwidth}{.4pt} \\
+    \begin{tabular}[t]{l@{}}%
+        \usekomavar{fromname}\\
+        \usekomavar{fromaddress}\\
+    \end{tabular}%
+    \hfill
+    \begin{tabular}[t]{l@{}}%
+        \usekomavar[\phone~]{fromphone}\\
+        \usekomavar[\Letter~]{fromemail}\\
+    \end{tabular}%
+    \ifkomavarempty{frombank}{}{%
+    \hfill
+    \begin{tabular}[t]{l@{}}%
+        \usekomavar{frombank}
+    \end{tabular}%
+    }%
+    }%
+    \setkomavar{nextfoot}{
+    \parbox[t][1in][c]{\textwidth}{
+    \centering{Seite \arabic{page} von \pageref{LastPage}}\\
+    \rule[3pt]{\textwidth}{.4pt} \\
+    \footnotesize
+    \begin{tabular}[t]{l@{}}%
+        \usekomavar{fromname}\\
+        \usekomavar{fromaddress}\\
+    \end{tabular}%
+    \hfill
+    \begin{tabular}[t]{l@{}}%
+        \usekomavar[\phone~]{fromphone}\\
+        \usekomavar[\Letter~]{fromemail}\\
+    \end{tabular}%
+    \ifkomavarempty{frombank}{}{%
+    \hfill
+    \begin{tabular}[t]{l@{}}%
+        \usekomavar{frombank}
+    \end{tabular}%
+    }}}
+    %---------------------------------------------------------------------------
+    % Bankverbindung
+    \setkomavar{frombank}{IBAN: DE88840510101113003290 \\BIC: HELADEF1ILK }
+    %---------------------------------------------------------------------------
+    \newkomavar{vereinName}
+    \newkomavar{vereinPerson}
+    \newkomavar{vereinAdresse}
+    \newkomavar{vereinOrt}
+    \newkomavar{datum}
+    \newkomavar{projId}
+    \newkomavar{projName}
+    \newkomavar{projDauer}
+    \newkomavar{projAbrechnungDatum}
+    \newkomavar{sturaBeschluss}
+    \newkomavar{sturaBetrag}
+    \newkomavar{sturaVorkasse}
+    \newkomavar{sturaTitel}
+    \newkomavar{anlagen}
+    \newkomavar{hv}
+    \newkomavar{betreff}
+    \newkomavar{sturaAbrechnung}
+    \newkomavar{sturaRest}
+    \newkomavar{iban}
+    \newkomavar{titel}
 
-\input{parameter.tex}
-%only comment in for test purpose on latex editor
-%\newcommand{\filename}{bewilligung}\newcommand{\betreff}{Bewilligungsbescheid}
-%\ifthenelse{\equal{\filename}{auszahlung}}{\setkomavar{betreff}{Prüf- und Auszahlungsbescheid}}{}
-%\ifthenelse{\equal{\filename}{bewilligung}}{\setkomavar{betreff}{Bewilligungsbescheid}\setkomavar{anlagen}{Abgestimmter Finanzplan}}{}
-%---------------------------------------------------------------------------
-%\setkomavar{yourref}{Test}
-%\setkomavar{yourmail}{}
-%\setkomavar{myref}{}
-%\setkomavar{customer}{}
-%\setkomavar{invoice}{}
-%---------------------------------------------------------------------------
-% Datum und Ort werden hier eingetragen
-\setkomavar{date}{den \usekomavar{datum}}
-\setkomavar{place}{Ilmenau}
-%---------------------------------------------------------------------------
-\setkomavar{subject}{\Large \textbf{\usekomavar{titel}}}
-% Briefkörper bündig am Briefkopf ausrichten
-%\setlength{\oddsidemargin}{\useplength{toaddrhpos}}
-%\addtolength{\oddsidemargin}{-1in}
-%\setlength{\textwidth}{\useplength{firstheadwidth}}
-% Hier beginnt der Brief, mit der Anschrift des Empfängers
-\begin{letter}
-{
-\usekomavar{vereinName} \\
-\usekomavar{vereinPerson} \\
-\usekomavar{vereinAdresse}\\
-\usekomavar{vereinOrt}
-}%
-%---------------------------------------------------------------------------
-% Der Betreff des Briefes
-%---------------------------------------------------------------------------
-\opening{Sehr geehrte Damen und Herren,}
-\input{\filename}
-\closing{Mit freundlichen Grüßen}
-%---------------------------------------------------------------------------
-\vspace{-4mm}
-\ps{\footnotesize Gegen diesen Bescheid kann innerhalb von 30 Tagen nach Zugang Widerspruch beim Studierendenrat der Technischen Universität Ilmenau schriftlich oder zur Niederschrift eingelegt werden.}
-\vspace{5mm}
-\ifkomavarempty{anlagen}{}{\encl{\usekomavar{anlagen}}}
+    \input{parameter.tex}
+    %only comment in for test purpose on latex editor
+    %\newcommand{\filename}{bewilligung}\newcommand{\betreff}{Bewilligungsbescheid}
+    %\ifthenelse{\equal{\filename}{auszahlung}}{\setkomavar{betreff}{Prüf- und Auszahlungsbescheid}}{}
+    %\ifthenelse{\equal{\filename}{bewilligung}}{\setkomavar{betreff}{Bewilligungsbescheid}\setkomavar{anlagen}{Abgestimmter Finanzplan}}{}
+    %---------------------------------------------------------------------------
+    %\setkomavar{yourref}{Test}
+    %\setkomavar{yourmail}{}
+    %\setkomavar{myref}{}
+    %\setkomavar{customer}{}
+    %\setkomavar{invoice}{}
+    %---------------------------------------------------------------------------
+    % Datum und Ort werden hier eingetragen
+    \setkomavar{date}{den \usekomavar{datum}}
+    \setkomavar{place}{Ilmenau}
+    %---------------------------------------------------------------------------
+    \setkomavar{subject}{\Large \textbf{\usekomavar{titel}}}
+    % Briefkörper bündig am Briefkopf ausrichten
+    %\setlength{\oddsidemargin}{\useplength{toaddrhpos}}
+    %\addtolength{\oddsidemargin}{-1in}
+    %\setlength{\textwidth}{\useplength{firstheadwidth}}
+    % Hier beginnt der Brief, mit der Anschrift des Empfängers
+    \begin{letter}
+    {
+    \usekomavar{vereinName} \\
+    \usekomavar{vereinPerson} \\
+    \usekomavar{vereinAdresse}\\
+    \usekomavar{vereinOrt}
+    }%
+        %---------------------------------------------------------------------------
+        % Der Betreff des Briefes
+        %---------------------------------------------------------------------------
+        \opening{Sehr geehrte Damen und Herren,}
+        \input{\filename}
+        \closing{Mit freundlichen Grüßen}
+        %---------------------------------------------------------------------------
+        \vspace{-4mm}
+        \ps{\footnotesize Gegen diesen Bescheid kann innerhalb von 30 Tagen nach Zugang Widerspruch beim Studierendenrat der Technischen Universität Ilmenau schriftlich oder zur Niederschrift eingelegt werden.}
+        \vspace{5mm}
+        \ifkomavarempty{anlagen}{}{\encl{\usekomavar{anlagen}}}
 
-%\cc{}
+        %\cc{}
 
-%---------------------------------------------------------------------------
-\end{letter}
-%---------------------------------------------------------------------------
+        %---------------------------------------------------------------------------
+    \end{letter}
+    %---------------------------------------------------------------------------
 \end{document}
 %---------------------------------------------------------------------------
 
