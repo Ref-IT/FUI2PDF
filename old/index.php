@@ -263,7 +263,7 @@ class PDF_Factory{
         }else{
             $this->result["status"] = "Datei konnte nicht erstellt werden";
             if (PDF_Factory::$reportLaTeXError){
-                $this->result["pdflatexOutput"] = substr($ret, -200);
+                $this->result["pdflatexOutput"] = substr($ret, -1000);
                 if (strpos($ret, 'no output PDF file produced') !== false && file_exists($this->filename . ".log")){
                     $this->result["pdflatexLog"] = substr(file_get_contents($this->filename . ".log"), -2000);
                 }

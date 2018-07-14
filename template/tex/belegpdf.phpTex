@@ -1,0 +1,217 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{ngerman}
+\usepackage[tx]{sfmath}
+\usepackage{calc}
+\usepackage{lastpage}
+%\usepackage{ifthen}
+\usepackage{xifthen}
+\usepackage{multicol}
+\renewcommand\familydefault{\sfdefault}
+\usepackage{tgheros}
+\usepackage{intcalc}
+
+\usepackage{amsmath,amssymb,amsthm,textcomp}
+%\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{tikz}
+
+\usepackage{geometry}
+\geometry{total={210mm,297mm},
+left=25mm,right=25mm,%
+bindingoffset=0mm, top=20mm,bottom=20mm}
+
+% pdf version to min 1.6
+\pdfminorversion=6
+
+\newcommand{\picpaths}{<?php 
+	$ff = '';
+	foreach($param['files'] as $k => $v){
+		$sp = explode('/', $v);
+		$ff .= (($ff)?',':'').self::texEscape($k).'/'.self::texEscape($sp[2]);
+	}
+	echo $ff;
+?>}
+\newcommand{\footerstring}{<?php $year = substr($param['projekt']['created'], 0, 4); echo "$year ". self::texEscape('Belege P'.str_pad($param['projekt']['id'], 2, "0", STR_PAD_LEFT )).self::texEscape('-A'.str_pad($param['auslage']['id'], 2, "0", STR_PAD_LEFT )) ?>}
+\linespread{1.3}
+
+\newcommand{\linia}{\rule{\linewidth}{0.5pt}}
+
+\newcommand{\mysection}[1]{
+\begin{center}
+{\large \textsc{#1}}
+\vspace*{-0.5cm}
+\\\linia\\
+\vspace*{-0.6cm}
+\end{center}
+}
+
+% custom theorems if needed
+\newtheoremstyle{mytheor}
+    {1ex}{1ex}{\normalfont}{0pt}{\scshape}{.}{1ex}
+    {{\thmname{#1 }}{\thmnumber{#2}}{\thmnote{ (#3)}}}
+
+\theoremstyle{mytheor}
+\newtheorem{defi}{Definition}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace*{-0.5cm}
+{\huge \textsc{\@title}}
+\linia
+\end{center}
+}
+\makeatother
+%%%
+
+% custom footers and headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{\footerstring}
+\cfoot{}
+\rfoot{Seite \thepage{} von \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%
+% all section titles centered and bolded
+\usepackage{sectsty}
+\allsectionsfont{\centering\bfseries\large}
+%
+% add section label
+\renewcommand\thesection{}
+%
+
+%%%----------%%%----------%%%----------%%%----------%%%
+
+\begin{document}
+
+\title{Belege Einreichen}
+\author{StuRa der TU Ilmenau}
+
+\vspace*{-2.0cm}
+\begin{figure}[h]
+\centering
+\includegraphics[width=3cm]{<?= self::texEscape(SYSBASE.'/template/img/stura2.pdf') ?>}
+\end{figure} 
+
+\maketitle
+
+\vspace*{-0.5cm}
+{\setlength{\parindent}{0cm}
+\textit{\textbf{Hinweis: }Die Belege für diese Auslagenerstattung müssen an dieses Dokument angehangen, alles zusammen getackert, und im Stura Büro bei Referat Fianzen eingereicht werden. Dazu legt man das Dokument in das Postfach des Referats Finanzen.} 
+}
+\vspace*{-0.3cm}
+\\\linia\\
+\vspace{-0.3cm}
+\begin{figure}[h]
+\centering
+\parbox[b]{0.6\linewidth}{% size of the first signature box
+    \strut 
+    \textbf{Eingegangen am} \hrule
+}
+\end{figure}
+%
+%
+%
+\vspace*{-0.1cm}
+\mysection{Projekt Angaben}
+
+\begin{enumerate}[label=\Roman*]
+\itemsep-2mm
+\item \textbf{ID}\hfill <?= self::texEscape('P'.str_pad($param['projekt']['id'], 2, "0", STR_PAD_LEFT )) ?>
+\item \textbf{Projekt}\hfill <?= self::texEscape($param['projekt']['name']) ?>
+\item \textbf{Organisation} \hfill <?= self::texEscape($param['projekt']['org']) ?>
+\item \textbf{Erstellt} \hfill <?= self::texEscape($param['projekt']['created']) ?>
+\end{enumerate}
+
+\vspace*{2mm}
+\mysection{Abrechnung}
+\begin{enumerate}[label=\Roman*,resume]
+\itemsep-2mm
+\item \textbf{ID}\hfill <?= self::texEscape('A'.str_pad($param['auslage']['id'], 2, "0", STR_PAD_LEFT )) ?>
+\item \textbf{Name} \hfill <?= self::texEscape(($param['auslage']['name'])? $param['auslage']['name'] : 'keine Angabe'); ?>
+\item \textbf{Erstellt} \hfill <?= self::texEscape($param['auslage']['created']) ?>
+\item \textbf{Von} \hfill <?= self::texEscape($param['auslage']['created_by']) ?>
+\item \textbf{Zahlung An} \hfill <?= self::texEscape($param['auslage']['zahlung']['name']) ?>
+\end{enumerate}
+
+\vspace*{2mm}
+
+\begin{center}
+\begin{tabular}{rrr}
+\textbf{Beleg} & \textbf{Datum} & \textbf{Beschreibung} \\
+<?php foreach($param['belege'] as $b){
+	echo '\\vspace{-3.8mm}\\\\\\hline\\parbox[t]{3cm}{\\raggedleft '.self::texEscape(str_pad($b['id'], 3, "0", STR_PAD_LEFT ).'-B'.$b['short']).'} & ';
+	$d = explode(' ', $b['date']);
+	echo '\\parbox[t]{4cm}{\\raggedleft '.self::texEscape($d[0]).'} & ';
+	echo '\\parbox[t]{8cm}{\\raggedleft '.self::texEscape($b['desc']).'}'; ?>\\<?php
+} ?>
+\end{tabular}
+\end{center}
+
+\newpage
+%Belege
+\tikzset{
+  font={\fontsize{29pt}{12}\selectfont}}
+\foreach \nr/\picname in \picpaths
+{
+	%% bei mehrseitigen Belegen erst alle originale und dann alle Kopien 
+	%% bei einseitigen Belegen, beides auf einer Seite
+	
+	\pdfximage{\picname}
+    %Switch case der Anzahl Seiten des Beleges
+    
+                
+    \begin{tikzpicture}[remember picture,overlay]
+    	 %rechteck
+         \draw [draw=black,line width=5mm,opacity=0.3] (16.5,-10) rectangle (-1,-1.25);
+		 %belegnummer		
+		 \node [opacity=1,anchor=north east,xshift=\textwidth, yshift=1.85cm] {\raggedleft \nr};
+			%text im Rechteck
+         \node [opacity=0.3,anchor=north west, yshift=-2.0cm] {Den hier unten abgebildeten };
+         \node [opacity=0.3,anchor=north west, yshift=-3.6cm] {Beleg};
+         \node [opacity=0.6,anchor=north west, xshift=3.0cm, yshift=-3.6cm] {\textbf{\nr{}}};
+         \node [opacity=0.3,anchor=north west, yshift=-5.0cm] {antackern (Original).};
+		 \node [opacity=0.3,anchor=north west, yshift=-6.1cm] {Falls dieser Beleg ein A4 Beleg };
+		 \node [opacity=0.3,anchor=north west, yshift=-7.2cm] {ist, hefte das Original vor};
+		 \node [opacity=0.3,anchor=north west, yshift=-8.3cm] {dieser Seite ab.};
+         \node [anchor =north east, inner sep=0pt,outer sep=0pt,yshift=-0.45\paperheight] at (current page.north east) {\fbox{\includegraphics[page=1,angle=90,width=0.925\paperwidth,height=0.45\paperheight]{\picname}}};
+         \node [rotate=90, opacity=0.75,anchor=north west,xshift=-0.83\paperheight,yshift=2.92cm]{ Beleg \nr - Seite 1};
+    \end{tikzpicture}
+    \newpage
+    \ifthenelse{\the\pdflastximagepages > 1}{
+        	\foreach \index in {2,...,\the\pdflastximagepages}
+				{%iteriere über die Seiten des Beleg pdfs
+				\ifthenelse{\not \isodd{\index}}{
+					\begin{tikzpicture}[remember picture,overlay]
+						%belegnummer		
+		 				\node [opacity=1,anchor=north east,xshift=\textwidth, yshift=1.85cm] {\raggedleft \nr};
+      					\node [anchor =north east, inner sep=0pt,outer sep=0pt,yshift=-2cm] at (current page.north east) {\fbox{\includegraphics[page=\index,angle=90,width=0.925\paperwidth,height=0.415\paperheight]{\picname}}};
+		    			\node [rotate=90, opacity=0.75,anchor=north west,xshift=-0.375\paperheight,yshift=2.92cm] { Seite \index};
+  					\end{tikzpicture}
+				}{ %else unterer Teil des Blattes
+					\begin{tikzpicture}[remember picture,overlay]  
+      					\node [anchor =north east, inner sep=0pt,outer sep=0pt,yshift=-14.55cm] at (current page.north east) {\fbox{\includegraphics[page=\index,angle=90,width=0.925\paperwidth,height=0.415\paperheight]{\picname}}};
+		    			\node [rotate=90, opacity=0.75,anchor=north west,xshift=-0.75\paperheight,yshift=2.92cm] { Seite \index};
+  					\end{tikzpicture}
+					\newpage
+				} %if end
+   		  		
+		}{} %else end if page > 1
+	\newpage
+	}
+}
+
+
+\end{document}

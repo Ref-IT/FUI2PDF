@@ -8,7 +8,6 @@
 *.synctex.gz
 .project
 .buildpath
-config/config.php
 *.settings/*
 !/img/stura-try.pdf
 /hiddenAPIKey.php
