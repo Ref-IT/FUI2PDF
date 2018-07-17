@@ -25,8 +25,10 @@ class TexBuilder
     					'maxlength' => '255',
 						'error' =>	'Ungültiger Projekt Name.'
     				],
-					'org' => [ 'name',
+					'org' => [ 'regex',
+						'pattern' => '/^[a-zA-Z0-9\-_ ()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 						'maxlength' => '255',
+						'empty',
 						'error' =>	'Ungültiger Organisations Name.'
 					],
 					'id' => ['integer',
