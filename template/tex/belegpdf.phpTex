@@ -37,7 +37,7 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 	}
 	echo $ff;
 ?>}
-\newcommand{\footerstring}{<?php $year = substr($param['projekt']['created'], 0, 4); echo "$year ". self::texEscape('Belege IP-'.$year.'-'.str_pad($param['projekt']['id'], 2, "0", STR_PAD_LEFT )).self::texEscape('-A'.str_pad($param['auslage']['id'], 2, "0", STR_PAD_LEFT )) ?>}
+\newcommand{\footerstring}{<?php $year = substr($param['projekt']['created'], 0, 4); echo "$year ". self::texEscape('Belege IP-'.substr($year, 2).'-'.str_pad($param['projekt']['id'], 1, "0", STR_PAD_LEFT )).self::texEscape('-A'.str_pad($param['auslage']['id'], 2, "0", STR_PAD_LEFT )) ?>}
 \linespread{1.3}
 
 \newcommand{\linia}{\rule{\linewidth}{0.5pt}}
