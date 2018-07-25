@@ -21,12 +21,14 @@ class TexBuilder
 						'parse' => 'Y-m-d H:i:s',
 						'error' =>	'Ungültiges Projekt Datum.'
 					],
-					'name' => [ 'name',
+					'name' => [ 'regex',
+						'pattern' => '/^[a-zA-Z0-9\-_ \.!\?\/\\()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
     					'maxlength' => '255',
+						'empty',
 						'error' =>	'Ungültiger Projekt Name.'
     				],
 					'org' => [ 'regex',
-						'pattern' => '/^[a-zA-Z0-9\-_ ()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+						'pattern' => '/^[a-zA-Z0-9\-_ \.!\?\/\\()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 						'maxlength' => '255',
 						'empty',
 						'error' =>	'Ungültiger Organisations Name.'
