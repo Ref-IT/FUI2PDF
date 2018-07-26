@@ -47,7 +47,7 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 {\large \textsc{#1}}
 \vspace*{-0.5cm}
 \\\linia\\
-\vspace*{-0.6cm}
+\vspace*{-0.5cm}
 \end{center}
 }
 
@@ -142,8 +142,9 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \item \textbf{ID}\hfill <?= self::texEscape('A'.str_pad($param['auslage']['id'], 2, "0", STR_PAD_LEFT )) ?>
 \item \textbf{Name} \hfill <?= self::texEscape(($param['auslage']['name'])? $param['auslage']['name'] : 'keine Angabe'); ?>
 \item \textbf{Erstellt} \hfill <?= self::texEscape($param['auslage']['created']) ?>
-\item \textbf{Von} \hfill <?= self::texEscape($param['auslage']['created_by']) ?>
+\item \textbf{Eingereicht von} \hfill <?= self::texEscape($param['auslage']['created_by']) ?>
 \item \textbf{Zahlung An} \hfill <?= self::texEscape($param['auslage']['zahlung']['name']) ?>
+\item \textbf{Addresse} \hfill <?= self::texEscape($param['auslage']['address']) ?>
 \end{enumerate}
 
 \vspace*{2mm}
