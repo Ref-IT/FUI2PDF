@@ -6,8 +6,13 @@
 *.out
 *.pdf
 *.synctex.gz
+.project
+.buildpath
+config/config.php
+*.settings/*
 !/img/stura-try.pdf
 /hiddenAPIKey.php
+old/hiddenAPIKey.php
 /parameter.tex
 /.fuse*
 *.idea

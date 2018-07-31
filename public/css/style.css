@@ -1,0 +1,42 @@
+html, body {
+	height: 100;
+	width: 100;
+	padding: 5px;
+	margin: 5px;
+}
+body {
+	padding: 5px;
+}
+.content {
+	border: 1px solid #ddd;
+	padding: 5px;
+}
+/* Profiling  ==============================================  */
+.profiling-output {
+    position: fixed;
+    background-color: white;
+    top: calc(100% - 35px);
+    left: 10px;
+    z-index: 10;
+	padding: 4px;
+}
+.profiling-output h3 {
+	font-size: 18px;
+	padding: 5px;
+}
+.profiling-output:hover {
+    position: fixed;
+    bottom: 0;
+    top: inherit;
+    max-height: 35%;
+    overflow-y: auto;
+	z-index:300;
+	border: 1px solid #ddd;
+}
+.fa-angle-toggle::before {
+    content: "\f106";
+}
+
+.profiling-output:hover .fa-angle-toggle::before {
+    content: "\f107";
+}
