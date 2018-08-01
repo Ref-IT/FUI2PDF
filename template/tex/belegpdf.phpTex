@@ -29,7 +29,7 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 % pdf version to min 1.6
 \pdfminorversion=6
 
-\newcommand{\picpaths}{<?php 
+\newcommand{\picpaths}{<?php
 	$ff = '';
 	foreach($param['files'] as $k => $v){
 		$sp = explode('/', $v);
@@ -103,13 +103,13 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \begin{figure}[h]
 \centering
 \includegraphics[width=3cm]{<?= self::texEscape(SYSBASE.'/template/img/stura2.pdf') ?>}
-\end{figure} 
+\end{figure}
 
 \maketitle
 
 \vspace*{-0.5cm}
 {\setlength{\parindent}{0cm}
-\textit{\textbf{Hinweis: }Die Belege für diese Auslagenerstattung müssen an dieses Dokument angehangen, alles zusammen getackert, und im Stura Büro bei Referat Fianzen eingereicht werden. Dazu legt man das Dokument in das Postfach des Referats Finanzen.} 
+\textit{\textbf{Hinweis: }Die Belege für diese Auslagenerstattung müssen an dieses Dokument angehangen, alles zusammen getackert, und im Stura Büro bei Referat Fianzen eingereicht werden. Dazu legt man das Dokument in das Postfach des Referats Finanzen.}
 }
 \vspace*{-0.3cm}
 \\\linia\\
@@ -117,7 +117,7 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \begin{figure}[h]
 \centering
 \parbox[b]{0.6\linewidth}{% size of the first signature box
-    \strut 
+    \strut
     \textbf{Eingegangen am} \hrule
 }
 \end{figure}
@@ -147,15 +147,30 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \item \textbf{Addresse} \hfill <?= self::texEscape($param['auslage']['address']) ?>
 \end{enumerate}
 
+\mysection{Versicherung}
+Ich versichere, dass alle Angaben von mir korrekt gemacht wurden.
+Weiterhin habe und werde ich die Belege bei keiner anderen Stelle angeben bzw. abrechnen.
+Außerdem habe ich alle Originalbelege angehangen, falls diese Belege nicht digital eingegangen sind.
+
+\vspace*{2mm}
+\parbox[b]{0.4\linewidth}{% ...and the second one
+    \strut
+    \textbf{Antragsteller} \\[1.25cm]% This 2cm is the space for the signature under the names
+    \hrule
+    \vspace{0.25cm}
+    (<?= self::texEscape($param['auslage']['created_by']) ?>)
+}
+
 \vspace*{2mm}
 
 \begin{center}
-\begin{tabular}{rrr}
+\begin{tabular}{rrrr}
 \textbf{Beleg} & \textbf{Datum} & \textbf{Beschreibung} \\
 <?php foreach($param['belege'] as $b){
 	echo '\\vspace{-3.8mm}\\\\\\hline\\parbox[t]{3cm}{\\raggedleft '.self::texEscape(str_pad($b['id'], 3, "0", STR_PAD_LEFT ).'-B'.$b['short']).'} & ';
 	$d = explode(' ', $b['date']);
 	echo '\\parbox[t]{4cm}{\\raggedleft '.self::texEscape($d[0]).'} & ';
+	echo '\\parbox[t]{5cm}{\\raggedleft \\ding{51}' . lesbare digitale Rechnung . '} & ';
 	echo '\\parbox[t]{8cm}{\\raggedleft '.self::texEscape($b['desc']).'}'; ?>\\<?php
 } ?>
 \end{tabular}
@@ -167,17 +182,17 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
   font={\fontsize{29pt}{12}\selectfont}}
 \foreach \nr/\picname in \picpaths
 {
-	%% bei mehrseitigen Belegen erst alle originale und dann alle Kopien 
+	%% bei mehrseitigen Belegen erst alle originale und dann alle Kopien
 	%% bei einseitigen Belegen, beides auf einer Seite
-	
+
 	\pdfximage{\picname}
     %Switch case der Anzahl Seiten des Beleges
-    
-                
+
+
     \begin{tikzpicture}[remember picture,overlay]
     	 %rechteck
          \draw [draw=black,line width=5mm,opacity=0.3] (16.5,-10) rectangle (-1,-1.25);
-		 %belegnummer		
+		 %belegnummer
 		 \node [opacity=1,anchor=north east,xshift=\textwidth, yshift=1.85cm] {\raggedleft \nr};
 			%text im Rechteck
          \node [opacity=0.3,anchor=north west, yshift=-2.0cm] {Den hier unten abgebildeten };
@@ -196,19 +211,19 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 				{%iteriere über die Seiten des Beleg pdfs
 				\ifthenelse{\not \isodd{\index}}{
 					\begin{tikzpicture}[remember picture,overlay]
-						%belegnummer		
+						%belegnummer
 		 				\node [opacity=1,anchor=north east,xshift=\textwidth, yshift=1.85cm] {\raggedleft \nr};
       					\node [anchor =north east, inner sep=0pt,outer sep=0pt,yshift=-2cm] at (current page.north east) {\fbox{\includegraphics[page=\index,angle=90,width=0.925\paperwidth,height=0.415\paperheight]{\picname}}};
 		    			\node [rotate=90, opacity=0.75,anchor=north west,xshift=-0.375\paperheight,yshift=2.92cm] { Seite \index};
   					\end{tikzpicture}
 				}{ %else unterer Teil des Blattes
-					\begin{tikzpicture}[remember picture,overlay]  
+					\begin{tikzpicture}[remember picture,overlay]
       					\node [anchor =north east, inner sep=0pt,outer sep=0pt,yshift=-14.55cm] at (current page.north east) {\fbox{\includegraphics[page=\index,angle=90,width=0.925\paperwidth,height=0.415\paperheight]{\picname}}};
 		    			\node [rotate=90, opacity=0.75,anchor=north west,xshift=-0.75\paperheight,yshift=2.92cm] { Seite \index};
   					\end{tikzpicture}
 					\newpage
 				} %if end
-   		  		
+
 		}{} %else end if page > 1
 	\newpage
 	}
