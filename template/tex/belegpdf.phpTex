@@ -158,7 +158,7 @@ Digitale Belege, die nicht in der verkleinerten Fassung lesbar sind habe ich zus
     \\[1.25cm]% This 2cm is the space for the signature under the names
     \hrule
     \vspace{0.25cm}
-    Unterschrift Antragssteller/in: <?= self::texEscape($param['auslage']['created_by']) ?>
+    Unterschrift Antragssteller\/in: <?= self::texEscape($param['auslage']['created_by']) ?>
 }
 
 \vspace*{2mm}
