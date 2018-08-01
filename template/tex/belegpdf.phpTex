@@ -170,7 +170,7 @@ Außerdem habe ich alle Originalbelege angehangen, falls diese Belege nicht digi
 	echo '\\vspace{-3.8mm}\\\\\\hline\\parbox[t]{3cm}{\\raggedleft '.self::texEscape(str_pad($b['id'], 3, "0", STR_PAD_LEFT ).'-B'.$b['short']).'} & ';
 	$d = explode(' ', $b['date']);
 	echo '\\parbox[t]{4cm}{\\raggedleft '.self::texEscape($d[0]).'} & ';
-	echo '\\parbox[t]{5cm}{\\raggedleft \\ding{51}' . lesbare digitale Rechnung . '} & ';
+	echo '\\parbox[t]{5cm}{\\raggedleft \\ding{51} lesbare digitale Rechnung} & ';
 	echo '\\parbox[t]{8cm}{\\raggedleft '.self::texEscape($b['desc']).'}'; ?>\\<?php
 } ?>
 \end{tabular}
