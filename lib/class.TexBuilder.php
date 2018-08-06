@@ -22,13 +22,13 @@ class TexBuilder
 						'error' =>	'Ungültiges Projekt Datum.'
 					],
 					'name' => [ 'regex',
-						'pattern' => '/^[a-zA-Z0-9\-_ \.!\?\/\\()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+						'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
     					'maxlength' => '255',
 						'empty',
 						'error' =>	'Ungültiger Projekt Name.'
     				],
 					'org' => [ 'regex',
-						'pattern' => '/^[a-zA-Z0-9\-_ \.!\?\/\\()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+						'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 						'maxlength' => '255',
 						'empty',
 						'error' =>	'Ungültiger Organisations Name.'
@@ -51,7 +51,9 @@ class TexBuilder
 						'maxlength' => '255',
 						'error' =>	'Ungültiger Auslagen Name.'
 					],
-					'name' => [ 'name',
+					'name' => [ 'regex',
+						'empty',
+						'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 						'maxlength' => '255',
 						'error' =>	'Ungültiger Auslagen Name.'
 					],
@@ -62,8 +64,10 @@ class TexBuilder
 					'zahlung' => ['arraymap',
 						'required' => true,
 						'map' => [
-							'name' => [ 'name',
-								'maxlength' => '255',
+							'name' => [ 'regex',
+			                    'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+			                    'maxlength' => '127',
+		                        'empty',
 								'error' =>	'Ungültiger Zahlungs Name.'
 							],
 						],
