@@ -117,6 +117,70 @@ class TexBuilder
 				]
 			],
 		],
+		'gremienbescheinigung' => [
+			'vorname' => [ 'regex',
+				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+				'maxlength' => '255',
+				'empty',
+				'error' =>	'Ungültiger Vorname.'
+			],
+			'name' => [ 'regex',
+				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+				'maxlength' => '255',
+				'empty',
+				'error' =>	'Ungültiger Name.'
+			],
+			'adresse' => [ 'regex',
+				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+				'maxlength' => '255',
+				'empty',
+				'error' =>	'Ungültige Adresse.'
+			],
+			'ort' => [ 'regex',
+				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+				'maxlength' => '255',
+				'empty',
+				'error' =>	'Ungültiger Ort.'
+			],
+			'male' => [ 'boolean',
+				'error' =>	'Wert für male.'
+			],
+			'geburtsdatum' => ['date',
+				'format' => 'd.m.Y',
+				'error' =>	'Ungültiges Geburtsdatum.'
+			],
+			'date' => ['date',
+				'format' => 'd.m.Y',
+				'error' =>	'Ungültiges Datum.'
+			],
+			'sum' => [ 'integer',
+				'min' => 0,
+				'error' => 'Ungültige Summe'
+			],
+			'smallest' => ['regex',
+				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+				'maxlength' => '255',
+				'error' => "Ungültiges Datum 'smallest'."
+			],
+			'biggest' => ['regex',
+				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+				'maxlength' => '255',
+				'error' =>	"Ungültiges Datum 'biggest'."
+			],
+			'konsul' => ['regex',
+				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+				'maxlength' => '255',
+				'error' => "Ungültiger Konsul name."
+			],
+			'arbeit' => ['array',
+				'empty',
+				'validator' => ['regex',
+					'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+					'maxlength' => '255',
+					'error' => "Ungültiger Array Wert.",
+				],
+			],
+		],
 	];
 	
 	/**
