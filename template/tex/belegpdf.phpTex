@@ -14,6 +14,7 @@
 \renewcommand\familydefault{\sfdefault}
 \usepackage{tgheros}
 \usepackage{intcalc}
+\usepackage{setspace}
 
 \usepackage{amsmath,amssymb,amsthm,textcomp}
 %\usepackage{enumerate}
@@ -108,9 +109,9 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \maketitle
 
 \vspace*{-0.5cm}
-{\setlength{\parindent}{0cm}
+{\setlength{\parindent}{0cm}{\footnotesize
 \textit{\textbf{Hinweis: }Die Belege für diese Auslagenerstattung müssen an dieses Dokument angehangen, alles zusammen getackert, und im Stura Büro bei Referat Finanzen eingereicht werden. Dazu legt man das Dokument in das Postfach des Referats Finanzen.}
-}
+}}
 \vspace*{-0.3cm}
 \\\linia\\
 \vspace{-0.3cm}
@@ -135,7 +136,6 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \item \textbf{Erstellt} \hfill <?= self::texEscape($param['projekt']['created']) ?>
 \end{enumerate}
 
-\vspace*{2mm}
 \mysection{Abrechnung}
 \begin{enumerate}[label=\Roman*,resume]
 \itemsep-2mm
@@ -148,17 +148,19 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \end{enumerate}
 
 \mysection{Versicherung}
+{\footnotesize
 Ich versichere, dass alle Angaben von mir, zum jetzigen Zeitpunkt, korrekt eingereicht wurden.\\
 Weiterhin habe und werde ich die Belege bei keiner anderen Stelle angeben bzw. abrechnen.\\
 Außerdem habe ich alle Belege im Original angehangen, sofern diese nicht digital eingegangen sind.
 Digitale Belege, die nicht in der verkleinerten Fassung lesbar sind habe ich zusätzlich auch nocheinmal in groß angehangen.
+}
 
 \vspace*{2mm}
 \parbox[b]{0.4\linewidth}{% ...and the second one
     \vspace*{1.25cm}% This 2cm is the space for the signature under the names
     \hrule
     \vspace{0.25cm}
-    Unterschrift Antragssteller/in: <?= self::texEscape($param['auslage']['created_by']) ?>
+    Unterschrift <?= self::texEscape($param['auslage']['created_by']) ?>
 }
 
 \vspace*{2mm}
