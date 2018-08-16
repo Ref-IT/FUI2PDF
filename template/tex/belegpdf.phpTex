@@ -148,29 +148,28 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \end{enumerate}
 
 \mysection{Versicherung}
-Ich versichere, dass alle Angaben von mir korrekt gemacht wurden.
-Weiterhin habe und werde ich die Belege bei keiner anderen Stelle angeben bzw. abrechnen.
-Außerdem habe ich alle Originalbelege angehangen, falls diese Belege nicht digital eingegangen sind.
+Ich versichere, dass alle Angaben von mir, zum jetzigen Zeitpunkt, korrekt eingereicht wurden.\\
+Weiterhin habe und werde ich die Belege bei keiner anderen Stelle angeben bzw. abrechnen.\\
+Außerdem habe ich alle Belege im Original angehangen, sofern diese nicht digital eingegangen sind.
+Digitale Belege, die nicht in der verkleinerten Fassung lesbar sind habe ich zusätzlich auch nocheinmal in groß angehangen.
 
 \vspace*{2mm}
 \parbox[b]{0.4\linewidth}{% ...and the second one
-    \strut
-    \textbf{Antragsteller} \\[1.25cm]% This 2cm is the space for the signature under the names
+    \\[1.25cm]% This 2cm is the space for the signature under the names
     \hrule
     \vspace{0.25cm}
-    (<?= self::texEscape($param['auslage']['created_by']) ?>)
+    Unterschrift Antragssteller/in: <?= self::texEscape($param['auslage']['created_by']) ?>
 }
 
 \vspace*{2mm}
 
 \begin{center}
-\begin{tabular}{rrrr}
+\begin{tabular}{rrr}
 \textbf{Beleg} & \textbf{Datum} & \textbf{Beschreibung} \\
 <?php foreach($param['belege'] as $b){
 	echo '\\vspace{-3.8mm}\\\\\\hline\\parbox[t]{3cm}{\\raggedleft '.self::texEscape(str_pad($b['id'], 3, "0", STR_PAD_LEFT ).'-B'.$b['short']).'} & ';
 	$d = explode(' ', $b['date']);
 	echo '\\parbox[t]{4cm}{\\raggedleft '.self::texEscape($d[0]).'} & ';
-	echo '\\parbox[t]{5cm}{\\raggedleft \\ding{51} lesbare digitale Rechnung} & ';
 	echo '\\parbox[t]{8cm}{\\raggedleft '.self::texEscape($b['desc']).'}'; ?>\\<?php
 } ?>
 \end{tabular}
