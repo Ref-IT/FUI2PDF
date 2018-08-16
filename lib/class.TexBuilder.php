@@ -1,14 +1,15 @@
 <?php
 
-/** 
+/**
  * @author michael
- * 
+ *
  */
 class TexBuilder
 {
 	// member variables ----------------
 	/**
 	 * vailidator map
+	 *
 	 * @var array
 	 */
 	private static $valiMap = [
@@ -206,27 +207,41 @@ class TexBuilder
 	 */
 	private $binary_build;
 	
-	// getter / setter --------------------
-	
-	/**
-	 * @return the $error
-	 */
-	public function getError()
-	{
-		return $this->error;
-	}
-	
 	// constructor --------------------
 	
 	/**
 	 * class constructor
 	 */
-	function __construct()
-	{
+	function __construct(){
 		$this->validator = new Validator();
 		$this->error = false;
 	}
-
+	
+	// getter / setter --------------------
+	
+	/**
+	 * @return the $error
+	 */
+	public function getError(){
+		return $this->error;
+	}
+	
+	// helper -----------------------------
+	
+	/**
+	 * escape latex invalid letters
+	 *
+	 * @param string in
+	 * @return string
+	 */
+	private static function texEscape($in){
+		return str_replace(
+			['\\', '~', '_', '%', '$', '&', '^', '"', '{', '}'],
+			['\textbackslash', '\textasciitilde', '\_', '\%', '\$', '\&', '^', "''", '\{', '\}'],
+			$in
+		);
+	}
+	
 	/**
 	 * check if pdf builder exists
 	 * @return bool
@@ -237,6 +252,18 @@ class TexBuilder
 	
 	/**
 	 * validate Post or $data variables by builderKey
+	 * alias of validate
+	 * @param string $key
+	 * @param array $data
+	 * @return bool
+	 */
+	public function setData($key, $data = null){
+		return $this->validate($key, $data);
+	}
+	
+	/**
+	 * validate Post or $data variables by builderKey
+	 *
 	 * @param string $key
 	 * @param array $data
 	 * @return bool
@@ -260,46 +287,12 @@ class TexBuilder
 		}
 	}
 	
+	/**
+	 * return validated and filtered request data
+	 * @return mixed
+	 */
 	public function getValidated(){
 		return $this->validator->getFiltered();
-	}
-	
-	/**
-	 * validate Post or $data variables by builderKey
-	 * alias of validate
-	 * @param string $key
-	 * @param array $data
-	 * @return bool
-	 */
-	public function setData($key, $data = null){
-		return $this->validate($key, $data);
-	}
-	
-	/**
-	 * get binary pdf data
-	 * @param bool $echo 
-	 * return binary|NULL
-	 */
-	public function getBinary($echo = false) {
-		if ($this->binary_build){
-			if ($echo) echo $this->binary_build;
-			return $this->binary_build;
-		}
-		return NULL;
-	}
-	
-	/**
-	 * get pdf as base64 string
-	 * @param bool $echo
-	 * return string
-	 */
-	public function getBase64($echo = false) {
-		if ($this->binary_build){
-			$t = base64_encode($this->getBinary(false));
-			if ($echo) echo $t;
-			return $t;
-		}
-		return NULL;
 	}
 	
 	// build pdf ------------------------------------
@@ -325,7 +318,7 @@ class TexBuilder
 					$files[str_pad($b['id'], 3, "0", STR_PAD_LEFT ).'-B'.$b['short']] = $f.'.pdf';
 				}
 			}
-			
+				
 			$validated = $this->validator->getFiltered();
 			$validated['files'] = $files;
 			//get tex code
@@ -338,6 +331,33 @@ class TexBuilder
 			}
 			return true;
 		}
+	}
+
+	/**
+	 * get binary pdf data
+	 * @param bool $echo 
+	 * return binary|NULL
+	 */
+	public function getBinary($echo = false) {
+		if ($this->binary_build){
+			if ($echo) echo $this->binary_build;
+			return $this->binary_build;
+		}
+		return NULL;
+	}
+	
+	/**
+	 * get pdf as base64 string
+	 * @param bool $echo
+	 * return string
+	 */
+	public function getBase64($echo = false) {
+		if ($this->binary_build){
+			$t = base64_encode($this->getBinary(false));
+			if ($echo) echo $t;
+			return $t;
+		}
+		return NULL;
 	}
 	
 	// private ----------------------------------------
@@ -410,20 +430,7 @@ class TexBuilder
 		//unlink files
 		unlink($pdf_f);
 		unlink($f);
-	}
-	
-	/**
-	 * escape latex invalid letters
-	 * @param string in
-	 * @return string 
-	 */
-	private static function texEscape($in){
-		return str_replace(
-			['\\', '~', '_', '%', '$', '&', '^', '"', '{', '}'],
-			['\textbackslash', '\textasciitilde', '\_', '\%', '\$', '\&', '^', "''", '\{', '\}'],
-			$in
-		);
-	}
+	}	
 }
 
 ?>
