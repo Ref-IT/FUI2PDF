@@ -179,6 +179,13 @@ Digitale Belege, die nicht in der verkleinerten Fassung lesbar sind habe ich zus
 \end{center}
 
 \newpage
+%empty page %%%%%%%%%%%%%%%
+% 
+\ifthenelse{\isodd{\thepage}}{}{\null
+\thispagestyle{empty}\addtocounter{page}{-1}\newpage}
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %Belege
 \tikzset{
   font={\fontsize{29pt}{12}\selectfont}}
