@@ -1,0 +1,229 @@
+%%% Quelle: https://meinnoteblog.wordpress.com/2010/11/12/latex-vorlagen-fur-briefe-und-rechnung/
+%---------------------------------------------------------------------------
+\documentclass%%
+%---------------------------------------------------------------------------
+[fontsize=12pt,%%          Schriftgroesse
+%---------------------------------------------------------------------------
+% Satzspiegel
+paper=a4,%%               Papierformat
+enlargefirstpage=on,%%    Erste Seite anders
+pagenumber=foot,%%   Seitenzahl oben mittig
+%---------------------------------------------------------------------------
+% Layout
+headsepline=off,%%        Linie unter der Seitenzahl
+parskip=half,%%           Abstand zwischen Absaetzen
+firsthead=on,%%           display header on first page
+firstfoot=off,%%           display footer on first page
+%---------------------------------------------------------------------------
+% Was kommt in den Briefkopf und in die Anschrift
+fromalign=right,%%        Plazierung des Briefkopfs
+fromphone=on,%%           Telefonnummer im Absender
+fromrule=off,%%     Linie im Absender (aftername, afteraddress)
+fromfax=on,%%             Faxnummer
+fromemail=on,%%           Emailadresse
+fromurl=on,%%             Homepage
+fromlogo=on,%%            Firmenlogo
+addrfield=on,%%           Adressfeld fuer Fensterkuverts
+backaddress=on,%%         ...und Absender im Fenster
+subject=untitled,%%  Plazierung der Betreffzeile
+locfield=narrow,%%        zusaetzliches Feld fuer Absender
+foldmarks=on,%%           Faltmarken setzen
+numericaldate=off,%%      Datum numerisch ausgeben
+refline=narrow,%%         Geschaeftszeile im Satzspiegel
+firstfoot=on,%%           Footerbereich
+%---------------------------------------------------------------------------
+% Formatierung
+draft=off%%                Entwurfsmodus
+]{scrlttr2}
+%---------------------------------------------------------------------------
+\usepackage[english, ngerman]{babel}
+%\usepackage{scrpage2}
+%\pagestyle{scrheadings}
+%\clearscrheadfoot
+\usepackage{ wasysym }
+\usepackage{url}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+% symbols: (cell)phone, email
+\RequirePackage{marvosym}
+% for gray color in header
+\RequirePackage{color}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+%\usepackage[pdftitle={\id}]{hyperref}
+\usepackage{ifthen}
+\usepackage{lastpage}
+\usepackage{array,multirow}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{qrcode}
+\usepackage{ngerman}
+\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst}
+%---------------------------------------------------------------------------
+% Schriften werden hier definiert
+\renewcommand*\familydefault{\sfdefault} % Latin Modern Sans
+\setkomafont{fromname}{\sffamily\color{mygray}\LARGE}
+%\setkomafont{pagenumber}{\sffamily}
+\setkomafont{subject}{\mdseries}
+\setkomafont{backaddress}{\mdseries}
+\setkomafont{fromaddress}{\small\sffamily\mdseries\color{mygray}}
+%---------------------------------------------------------------------------
+\begin{document}
+    %---------------------------------------------------------------------------
+    % Briefstil und Position des Briefkopfs
+    \LoadLetterOption{DIN} %% oder: DINmtext, SN, SNleft, KOMAold.
+    \makeatletter
+    \@setplength{sigbeforevskip}{18mm} % Abstand der Signatur von dem closing
+    \@setplength{firstheadvpos}{17mm} % Abstand des Absenderfeldes vom Top
+    \@setplength{firstfootvpos}{265mm} % Abstand des Footers von oben
+    \@setplength{firstheadwidth}{\paperwidth}
+    \@setplength{locwidth}{70mm}   % Breite des Locationfeldes
+    \@setplength{locvpos}{60mm}    % Abstand des Locationfeldes von oben
+    \ifdim \useplength{toaddrhpos}>\z@
+    \@addtoplength[-2]{firstheadwidth}{\useplength{toaddrhpos}}
+    \else
+    \@addtoplength[2]{firstheadwidth}{\useplength{toaddrhpos}}
+    \fi
+    \@setplength{foldmarkhpos}{6.5mm}
+    \makeatother
+    %---------------------------------------------------------------------------
+    % Farben werden hier definiert
+    % define gray for header
+    \definecolor{mygray}{gray}{.55}
+    % define blue for address
+    \definecolor{myblue}{rgb}{0.25,0.45,0.75}
+
+    %---------------------------------------------------------------------------
+    % Absender Daten
+    \setkomavar{fromlogo}{\includegraphics[height=3.5cm]{<?=  self::texEscape(SYSBASE.'/template/img/stura-padding-bot.pdf')?>}
+    }
+    \setkomavar{fromname}{Studierendenrat der TU Ilmenau}
+    \setkomavar{fromaddress}{Max-Planck-Ring 7\\98693 Ilmenau}
+    \setkomavar{fromphone}[\phone~]{03677\,/\,69\,-\,1914}
+    \setkomavar{fromfax}[\FAX~]{03677\,/\,69\,-\,1193}
+    \setkomavar{fromemail}[\Letter~]{konsul@tu-ilmenau.de}
+    \setkomavar{fromurl}[\Mundus~]{https://stura.tu-ilmenau.de}
+    %\setkomafont{fromaddress}{\small\rmfamily\mdseries\slshape\color{myblue}}
+
+    \setkomavar{backaddressseparator}{, }
+    %\setkomavar{backaddress}{StuRa der TU Ilmenau, Felderhof 112, 40880 Ratingen} % wenn erwünscht kann hier eine andere Backaddress eingetragen werden
+    \setkomavar{signature}{
+    }
+    % signature same indention level as rest
+    \renewcommand*{\raggedsignature}{\raggedright}
+    \setkomavar{location}{\raggedleft
+    \vspace{1cm}
+    %Rechnungsnummer XZY hier gut platziert
+    }%%Zusätzliches Label Rechts von der Anschrift
+
+    % Anlage neu definieren
+    \renewcommand{\enclname}{Anlagen}
+    \setkomavar{enclseparator}{: }
+    %---------------------------------------------------------------------------
+    % Seitenstil
+    % pagenumber=footmiddle
+    \pagestyle{myheadings}%% keine Header in der Kopfzeile bzw. plain
+    \markboth{\usekomavar{fromname}}{\usekomavar{titel}}
+    \pagenumbering{arabic}
+    %---------------------------------------------------------------------------
+    %---------------------------------------------------------------------------
+    \setkomavar{firstfoot}{
+    \parbox[t]{\textwidth}{%
+        \centering{Seite \arabic{page} von \pageref{LastPage}}\\
+        \footnotesize%
+        \rule[3pt]{\textwidth}{.4pt} \\
+        \begin{tabular}[t]{l@{}}%
+        \usekomavar{fromname}~\\
+        \usekomavar{fromaddress}~\\
+        \end{tabular}%
+        \hfill
+        %\begin{tabular}[t]{l@{}}%
+        %Verifizierung unter: ~\\
+        %\qrcode[height=1cm]{https://www.ctan.org/tex-archive/macros/latex/contrib/qrcode?lang=en}
+        %\end{tabular}%
+        %\hfill
+        \begin{tabular}[t]{l@{}}%
+        Studentische/r Konsul/in ~\\
+        \usekomavar[\phone~]{fromphone}~\\
+        \usekomavar[\Letter~]{fromemail}~\\
+        \end{tabular}%
+    }}%
+        \setkomavar{nextfoot}{
+    	\usekomavar{firstfoot}
+    }
+    %---------------------------------------------------------------------------
+    %\setkomavar{yourref}{Test}
+    %\setkomavar{yourmail}{}
+    %\setkomavar{myref}{}
+    %\setkomavar{customer}{}
+    %\setkomavar{invoice}{}
+    %---------------------------------------------------------------------------
+    % Datum und Ort werden hier eingetragen
+	\newkomavar{titel}
+	\newkomavar{datum}
+    \setkomavar{titel}{Gremienbescheinigung}
+    \setkomavar{date}{den <?= self::texEscape($param['date']) ?>}
+    \setkomavar{place}{Ilmenau}
+    %---------------------------------------------------------------------------
+    \setkomavar{subject}{\Large \textbf{\usekomavar{titel}}}
+    % Briefkörper bündig am Briefkopf ausrichten
+    %\setlength{\oddsidemargin}{\useplength{toaddrhpos}}
+    %\addtolength{\oddsidemargin}{-1in}
+    %\setlength{\textwidth}{\useplength{firstheadwidth}}
+    % Hier beginnt der Brief, mit der Anschrift des Empfängers
+    \begin{letter}
+    {
+    	<?= self::texEscape($param['vorname'] . " " . $param['name']) ?>~\\
+        <?= self::texEscape($param['adresse']) ?>~\\
+        <?= self::texEscape($param['ort']) ?>}%
+        %---------------------------------------------------------------------------
+        % Der Betreff des Briefes
+        %---------------------------------------------------------------------------
+        \opening{für <?= self::texEscape(($param['male'] ? "Herr" : "Frau") . " " . $param['vorname'] . " " . $param['name']) ?>, geboren am <?= self::texEscape($param['geburtsdatum']) ?>. <?= self::texEscape(($param['male'] ? "Er" : "Sie")) ?> war wie folgt ehrenamtlich aktiv:}
+        
+        \begin{longtable}{p{1.65cm}p{1.65cm}p{4.3cm}p{4.2cm}p{1.9cm}}
+        	\textbf{von}&\textbf{bis}&\textbf{Position}&\textbf{Gremium/Organ}&\textbf{Umfang} \\
+            \toprule \endhead
+            \bottomrule \multicolumn{5}{c}{\scriptsize \begin{tabular}[c]{ccc} \emph{h = Stunden}& \emph{h/W = Stunden pro Woche} & \emph{h/S = Stunden pro Semester} \end{tabular}} \\
+            \bottomrule \endfoot
+            <?php
+            $i = 0;
+            setlocale(LC_TIME, "de_DE.utf8","de_DE.utf-8");
+            foreach ($param['arbeit'] as $row){
+                if ($i++){
+                    echo "\\midrule" . PHP_EOL;
+                }
+                echo self::texEscape(strftime("%b %G", strtotime($row["von"]))) . "&";
+                echo self::texEscape((isset($row["bis"]) && !empty($row["bis"]) ? strftime("%b %G", strtotime($row["bis"])) : "heute")) . "&";
+                echo self::texEscape($row["position"]) . "&";
+                echo self::texEscape($row["gremium"]) . "&";
+                echo "ca. " . self::texEscape($row["h"]) ." ". self::texEscape($row["type"])."\\\\" . PHP_EOL;
+               
+            } ?>
+            
+        \end{longtable}
+        
+        Insgesamt hat <?= self::texEscape($param['male'] ? "Herr" : "Frau") . " " . self::texEscape($param['name']) ?> somit rund <?= self::texEscape($param['sum']) ?> Stunden Arbeit im Zeitraum von <?= self::texEscape($param['smallest']) ?> bis <?= self::texEscape($param['biggest']) ?> freiwillig erbracht.
+
+        Im Rahmen dieser Tätigkeiten hat <?= self::texEscape($param['male'] ? "er" : "sie") ?> folgende Fähigkeiten erworben bzw. eingebracht:
+        \begin{itemize}
+            <?php foreach ($param["skills"] as $skill){
+                echo "\\item $skill";
+            } ?>
+        \end{itemize}
+        <?= self::texEscape($param['additional-text']) ?>
+        
+        \closing{Für <?= self::texEscape($param['male']? "Sein": "Ihr") ?> Engagement bedanken wir uns recht herzlich und wünschen noch viel Erfolg auf dem weiteren Lebensweg.\\
+            \vspace{2.5cm}
+            %\includegraphics[angle=-3,height=1cm]{<?=  self::texEscape(SYSBASE.'/template/img/sign.png')?>}
+            i.A. <?= self::texEscape($param['konsul']) ?> \\
+            Studentische/r Konsul/in der TU Ilmenau
+            \vspace{-2cm}
+        }
+        %---------------------------------------------------------------------------
+        %---------------------------------------------------------------------------
+    \end{letter}
+    %---------------------------------------------------------------------------
+\end{document}
+%---------------------------------------------------------------------------

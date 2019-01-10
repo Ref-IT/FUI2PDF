@@ -14,6 +14,7 @@
 \renewcommand\familydefault{\sfdefault}
 \usepackage{tgheros}
 \usepackage{intcalc}
+\usepackage{setspace}
 
 \usepackage{amsmath,amssymb,amsthm,textcomp}
 %\usepackage{enumerate}
@@ -37,7 +38,7 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 	}
 	echo $ff;
 ?>}
-\newcommand{\footerstring}{<?php $year = substr($param['projekt']['created'], 0, 4); echo "$year ". self::texEscape('Belege IP-'.substr($year, 2).'-'.str_pad($param['projekt']['id'], 1, "0", STR_PAD_LEFT )).self::texEscape('-A'.str_pad($param['auslage']['id'], 2, "0", STR_PAD_LEFT )) ?>}
+\newcommand{\footerstring}{<?php $year = substr($param['projekt']['created'], 0, 4); echo "$year ". self::texEscape('Belege IP-'.substr($year, 2).'-'.str_pad($param['projekt']['id'], 2, "0", STR_PAD_LEFT )).self::texEscape('-A'.str_pad($param['auslage']['id'], 2, "0", STR_PAD_LEFT )) ?>}
 \linespread{1.3}
 
 \newcommand{\linia}{\rule{\linewidth}{0.5pt}}
@@ -108,9 +109,9 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \maketitle
 
 \vspace*{-0.5cm}
-{\setlength{\parindent}{0cm}
-\textit{\textbf{Hinweis: }Die Belege für diese Auslagenerstattung müssen an dieses Dokument angehangen, alles zusammen getackert, und im Stura Büro bei Referat Fianzen eingereicht werden. Dazu legt man das Dokument in das Postfach des Referats Finanzen.}
-}
+{\setlength{\parindent}{0cm}{\footnotesize
+\textit{\textbf{Hinweis: }Die Belege für diese Auslagenerstattung müssen an dieses Dokument angehangen, alles zusammen getackert, und im Stura Büro bei Referat Finanzen eingereicht werden. Dazu legt man das Dokument in das Postfach des Referats Finanzen.}
+}}
 \vspace*{-0.3cm}
 \\\linia\\
 \vspace{-0.3cm}
@@ -118,7 +119,8 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \centering
 \parbox[b]{0.6\linewidth}{% size of the first signature box
     \strut
-    \textbf{Eingegangen am} \hrule
+    \textbf{Eingegangen am} \hrule~\\\vspace*{-7mm}
+    \textit{\tiny\\\hspace*{4.7cm}Auszufüllen durch Referat Finanzen}
 }
 \end{figure}
 %
@@ -129,13 +131,12 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 
 \begin{enumerate}[label=\Roman*]
 \itemsep-2mm
-\item \textbf{ID}\hfill <?= self::texEscape('P'.str_pad($param['projekt']['id'], 2, "0", STR_PAD_LEFT )) ?>
+\item \textbf{ID}\hfill <?= self::texEscape('IP-'.substr($year, 2).'-'.str_pad($param['projekt']['id'], 2, "0", STR_PAD_LEFT )) ?>
 \item \textbf{Projekt}\hfill <?= self::texEscape($param['projekt']['name']) ?>
 \item \textbf{Organisation} \hfill <?= self::texEscape($param['projekt']['org']) ?>
 \item \textbf{Erstellt} \hfill <?= self::texEscape($param['projekt']['created']) ?>
 \end{enumerate}
 
-\vspace*{2mm}
 \mysection{Abrechnung}
 \begin{enumerate}[label=\Roman*,resume]
 \itemsep-2mm
@@ -148,17 +149,19 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \end{enumerate}
 
 \mysection{Versicherung}
+{\footnotesize
 Ich versichere, dass alle Angaben von mir, zum jetzigen Zeitpunkt, korrekt eingereicht wurden.\\
 Weiterhin habe und werde ich die Belege bei keiner anderen Stelle angeben bzw. abrechnen.\\
 Außerdem habe ich alle Belege im Original angehangen, sofern diese nicht digital eingegangen sind.
 Digitale Belege, die nicht in der verkleinerten Fassung lesbar sind habe ich zusätzlich auch nocheinmal in groß angehangen.
+}
 
 \vspace*{2mm}
 \parbox[b]{0.4\linewidth}{% ...and the second one
     \vspace*{1.25cm}% This 2cm is the space for the signature under the names
     \hrule
     \vspace{0.25cm}
-    Unterschrift Antragssteller/in: <?= self::texEscape($param['auslage']['created_by']) ?>
+    Unterschrift <?= self::texEscape($param['auslage']['created_by']) ?>
 }
 
 \vspace*{2mm}
@@ -176,6 +179,13 @@ Digitale Belege, die nicht in der verkleinerten Fassung lesbar sind habe ich zus
 \end{center}
 
 \newpage
+%empty page %%%%%%%%%%%%%%%
+% 
+\ifthenelse{\isodd{\thepage}}{}{\null
+\thispagestyle{empty}\addtocounter{page}{-1}\newpage}
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %Belege
 \tikzset{
   font={\fontsize{29pt}{12}\selectfont}}

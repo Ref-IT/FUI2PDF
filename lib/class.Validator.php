@@ -230,6 +230,29 @@ class Validator {
 	}
 	
 	/**
+	 * boolean validator
+	 *
+	 * params:
+	 *  error	2	error message on error case
+	 *
+	 * @param $value
+	 * @param $params
+	 * @return boolean
+	 */
+	public function V_boolean($value, $params = []){
+		$v = trim($value);
+		if ($v === true || $v === 'true' || $v === '1' || $v === 1){
+			$this->filtered = true;
+			return !$this->setError(false);
+		} else if ($v === false || $v === 'false' || $v === '0' || $v === 0 || $v === '') {
+			$this->filtered = false;
+			return !$this->setError(false);
+		}
+		$msg = (isset($params['error']))? $params['error'] : 'No Boolean' ;
+		return !$this->setError(true, 200, $msg, 'No Boolean');
+	}
+	
+	/**
 	 * integer validator
 	 *
 	 * params:
