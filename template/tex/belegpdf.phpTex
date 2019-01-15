@@ -97,13 +97,13 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 
 \begin{document}
 
-\title{Belege Einreichen}
+\title{\includegraphics[width=1cm]{<?= self::texEscape(SYSBASE . '/template/img/stura2.pdf') ?>} Belege Einreichen}
 \author{StuRa der TU Ilmenau}
 
 \vspace*{-2.0cm}
 \begin{figure}[h]
 \centering
-\includegraphics[width=3cm]{<?= self::texEscape(SYSBASE.'/template/img/stura2.pdf') ?>}
+
 \end{figure}
 
 \maketitle
@@ -134,7 +134,6 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \item \textbf{ID}\hfill <?= self::texEscape('IP-'.substr($year, 2).'-'.str_pad($param['projekt']['id'], 2, "0", STR_PAD_LEFT )) ?>
 \item \textbf{Projekt}\hfill <?= self::texEscape($param['projekt']['name']) ?>
 \item \textbf{Organisation} \hfill <?= self::texEscape($param['projekt']['org']) ?>
-\item \textbf{Erstellt} \hfill <?= self::texEscape($param['projekt']['created']) ?>
 \end{enumerate}
 
 \mysection{Abrechnung}
@@ -142,7 +141,6 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \itemsep-2mm
 \item \textbf{ID}\hfill <?= self::texEscape('A'.str_pad($param['auslage']['id'], 2, "0", STR_PAD_LEFT )) ?>
 \item \textbf{Name} \hfill <?= self::texEscape(($param['auslage']['name'])? $param['auslage']['name'] : 'keine Angabe'); ?>
-\item \textbf{Erstellt} \hfill <?= self::texEscape($param['auslage']['created']) ?>
 \item \textbf{Eingereicht von} \hfill <?= self::texEscape($param['auslage']['created_by']) ?>
 \item \textbf{Zahlung An} \hfill <?= self::texEscape($param['auslage']['zahlung']['name']) ?>
 \item \textbf{Addresse} \hfill <?= self::texEscape($param['auslage']['address']) ?>
@@ -158,7 +156,7 @@ Digitale Belege, die nicht in der verkleinerten Fassung lesbar sind habe ich zus
 
 \vspace*{2mm}
 \parbox[b]{0.4\linewidth}{% ...and the second one
-    \vspace*{1.25cm}% This 2cm is the space for the signature under the names
+\vspace*{1.5cm}% This 2cm is the space for the signature under the names
     \hrule
     \vspace{0.25cm}
     Unterschrift <?= self::texEscape($param['auslage']['created_by']) ?>

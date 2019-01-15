@@ -31,7 +31,7 @@ if ($routeInfo['controller'] != 'error' && (!isset($routeInfo['allowall']) || !$
 
 // auth ---------------------------------
 if (isset($routeInfo['auth']) && ($routeInfo['auth'] == 'Basic' || $routeInfo['auth'] == 'basic')){
-    define('AUTH_HANLER', 'AuthBasicHandler');
+    define('AUTH_HANDLER', 'AuthBasicHandler');
     AuthBasicHandler::getInstance()->requireAuth();
     AuthBasicHandler::getInstance()->requireGroup('basic');
     if (!isset($routeInfo['groups'])){
@@ -44,7 +44,7 @@ if (isset($routeInfo['auth']) && ($routeInfo['auth'] == 'Basic' || $routeInfo['a
         $routeInfo['method'] = 'POST';
     }
 }else{
-    define('AUTH_HANLER', null);
+    define('AUTH_HANDLER', null);
 }
 
 // handle route -------------------------
@@ -54,6 +54,7 @@ switch ($routeInfo['controller']){
         break;
     case "pdfbuilder":
         $builder = new TexBuilder();
+        //var_dump($_POST);
         if (!AuthBasicHandler::getInstance()->hasGroup('pdfbuilder')
             || !isset($_POST['action'])
             || !$builder->builderExist($_POST['action'])){
