@@ -20,7 +20,7 @@ if ($routeInfo['controller'] != 'error' && (!isset($routeInfo['allowall']) || !$
         $routeInfo['controller'] = 'error';
         $routeInfo['method'] = 'POST';
     }
-    
+
     // ip check
     if ($_SERVER['REMOTE_ADDR'] && is_array($_SERVER['REMOTE_ADDR']) && !in_array($_SERVER['REMOTE_ADDR'], ALLOWED_IPS)){
         $routeInfo['action'] = '403';
@@ -31,7 +31,7 @@ if ($routeInfo['controller'] != 'error' && (!isset($routeInfo['allowall']) || !$
 
 // auth ---------------------------------
 if (isset($routeInfo['auth']) && ($routeInfo['auth'] == 'Basic' || $routeInfo['auth'] == 'basic')){
-    define('AUTH_HANLER', 'AuthBasicHandler');
+    define('AUTH_HANDLER', 'AuthBasicHandler');
     AuthBasicHandler::getInstance()->requireAuth();
     AuthBasicHandler::getInstance()->requireGroup('basic');
     if (!isset($routeInfo['groups'])){
@@ -44,7 +44,7 @@ if (isset($routeInfo['auth']) && ($routeInfo['auth'] == 'Basic' || $routeInfo['a
         $routeInfo['method'] = 'POST';
     }
 }else{
-    define('AUTH_HANLER', null);
+    define('AUTH_HANDLER', null);
 }
 
 // handle route -------------------------
@@ -85,5 +85,3 @@ switch ($routeInfo['controller']){
         $errorHdl->render();
         break;
 }
-
-

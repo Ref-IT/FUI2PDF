@@ -1,16 +1,17 @@
 <?php
+
 /**
  * FRAMEWORK Validator
  * filter and validation class
  *
- * @package         Stura - Referat IT - ProtocolHelper
- * @category        framework
- * @author 			michael g
- * @author 			Stura - Referat IT <ref-it@tu-ilmenau.de>
- * @since 			17.02.2018
- * @copyright 		Copyright (C) 2018 - All rights reserved
- * @platform        PHP
- * @requirements    PHP 7.0 or higher
+ * @package           Stura - Referat IT - ProtocolHelper
+ * @category          framework
+ * @author            michael g
+ * @author            Stura - Referat IT <ref-it@tu-ilmenau.de>
+ * @since             17.02.2018
+ * @copyright         Copyright (C) 2018 - All rights reserved
+ * @platform          PHP
+ * @requirements      PHP 7.0 or higher
  */
 class Validator {
 
@@ -19,7 +20,7 @@ class Validator {
 	 * boolean
 	 */
 	protected $isError;
-	
+
 	/**
 	 * last error message
 	 *  -> short error message
@@ -27,39 +28,39 @@ class Validator {
 	 * string
 	 */
 	protected $lastErrorMsg;
-	
+
 	/**
 	 * last stores last map key if map validation is used
 	 */
 	protected $lastMapKey = '';
-	
+
 	/**
 	 * last error description
 	 *  -> error description
 	 * string
 	 */
 	protected $lastErrorDescription;
-	
+
 	/**
 	 * last error message
 	 * string
 	 */
 	protected $lastErrorCode;
-	
+
 	/**
 	 * filter may sanitize inputs
 	 * mixed
 	 */
 	protected $filtered;
-	
+
 	/**
 	 * class constructor
 	 */
 	function __contstruct(){
 	}
-	
+
 	// ==========================================
-	
+
 	/**
 	 * set validation status
 	 *
@@ -75,7 +76,7 @@ class Validator {
 		$this->lastErrorDescription = ($desc == '')? $msg : $desc;
 		return $isError;
 	}
-	
+
 	/**
 	 * @return the $isError
 	 */
@@ -83,7 +84,7 @@ class Validator {
 	{
 		return $this->isError;
 	}
-	
+
 	/**
 	 * @return the $lastErrorMsg
 	 */
@@ -91,7 +92,7 @@ class Validator {
 	{
 		return $this->lastErrorMsg;
 	}
-	
+
 	/**
 	 * @return the $lastErrorDescription
 	 */
@@ -99,7 +100,7 @@ class Validator {
 	{
 		return $this->lastErrorDescription;
 	}
-	
+
 	/**
 	 * @return the $lastErrorCode
 	 */
@@ -107,7 +108,7 @@ class Validator {
 	{
 		return $this->lastErrorCode;
 	}
-	
+
 	/**
 	 * @return the $lastMapKey
 	 */
@@ -115,7 +116,7 @@ class Validator {
 	{
 		return $this->lastMapKey;
 	}
-	
+
 	/**
 	 * filter may sanitize input values are stored here
 	 * Post validators will create sanitized array
@@ -128,9 +129,9 @@ class Validator {
 		else
 			return $this->filtered[$key];
 	}
-	
+
 	// ==========================================
-	
+
 	/**
 	 * call selected validator function
 	 * @param mixed $value
@@ -150,7 +151,7 @@ class Validator {
 			return !$this->isError;
 		}
 	}
-	
+
 	/**
 	 * validate POST data with a validation list
 	 *
@@ -185,7 +186,7 @@ class Validator {
 		$this->filtered = $out;
 		return !$this->isError;
 	}
-	
+
 	/**
 	 * validate POST data with a validation list
 	 * add additional mfunction layer, so this will be required
@@ -213,10 +214,10 @@ class Validator {
 			return $ret;
 		}
 	}
-	
+
 	// ====== VALIDATORS ========================
 	// functions must start with 'V_validatorname'
-	
+
 	/**
 	 * dummy validator
 	 * always return 'valid'
@@ -228,7 +229,7 @@ class Validator {
 		$this->filtered = $value;
 		return true;
 	}
-	
+
 	/**
 	 * boolean validator
 	 *
@@ -251,7 +252,7 @@ class Validator {
 		$msg = (isset($params['error']))? $params['error'] : 'No Boolean' ;
 		return !$this->setError(true, 200, $msg, 'No Boolean');
 	}
-	
+
 	/**
 	 * integer validator
 	 *
@@ -298,18 +299,23 @@ class Validator {
 			return !$this->setError(false);
 		}
 	}
-	
+
 	/**
 	 * float validator
 	 *
-	 * params:
-	 *  KEY  1-> single value, 2-> key value pair
-	 *  decimal_seperator	2	[. or ,] default: .
-	 * 	min 				2	min value
-	 * 	max 				2	max value
-	 *  step				2	step - be carefull may produce errors (wrong deteced values)
-	 *  format				2	trim to x decimal places
-	 *  error				2	error message on error case
+	 *	params:
+	 *		KEY  1-> single value, 2-> key value pair
+	 *		decimal_seperator	2	[. or ,] default: .
+	 *		min 				2	min value
+	 *		max 				2	max value
+	 *		step				2	step - be carefull may produce errors (wrong deteced values)
+	 *		format				2	trim to x decimal places
+	 *		parse				2	has to be array with additional keys, parse after validation -> funs number format
+	 *			decimals		2	decimal count, 		 default: 2
+	 *			dec_point		2	dec point/seperator, default: ','
+	 *			thousands		2	thousands seperator, default: ''
+	 *			append			2	append after float value -> return value is no float, string instead, appends X to float value, e.g. ' EUR', or ' $', default: disabled
+	 *		error				2	error message on error case
 	 *
 	 * @param $value
 	 * @param $params
@@ -341,7 +347,7 @@ class Validator {
 					$cv = $cv * $ex;
 				}
 				$k = strlen($ex);
-				if ((is_numeric( $cv ) && mb_strpos($value, '.') + ($k) < mb_strlen($value)) || $cv % $mod != 0){
+				if ((is_numeric( $cv ) && mb_strpos($value, '.') && mb_strpos($value, '.') + ($k) < mb_strlen($value)) || $cv % $mod != 0){
 					$msg = (isset($params['error']))? $params['error'] : "float invalid step" ;
 					return !$this->setError(true, 200, $msg, 'float invalid step');
 				}
@@ -351,18 +357,32 @@ class Validator {
 			} else {
 				$this->filtered = $v;
 			}
+			if (isset($params['parse']) && is_array($params['parse']){
+
+			$params['parse'] === 'money'){
+				$this->filtered = number_format(
+					$v,
+					(isset($params['parse']['decimals']))? $params['parse']['decimals'] : 2,
+					(isset($params['parse']['dec_point']))? $params['parse']['dec_point'] : ',',
+					(isset($params['parse']['thousands']))? $params['parse']['thousands'] : ''
+				);
+				if (isset($params['parse']['append'])){
+					$this->filtered = $this->filtered . $params['parse']['append'];
+				}
+			}
 			return !$this->setError(false);
 		}
 	}
-	
+
 	/**
 	 * check if integer and larger than 0
 	 * @param integer $value
+	 * @return boolean
 	 */
 	public function V_id ($value, $params = NULL){
 		return $this->V_integer($value, ['min' => 1]);
 	}
-	
+
 	/**
 	 * text validator
 	 *
@@ -418,12 +438,13 @@ class Validator {
 			return !$this->setError(false);
 		}
 	}
-	
+
 	/**
 	 * email validator
 	 *
 	 * $param
-	 *  empty	1	allow empty value
+	 *  empty		1	allow empty value
+	 *  maxlength	2	maximum string length
 	 *
 	 * @param $value
 	 * @param $params
@@ -435,6 +456,10 @@ class Validator {
 			$this->filtered = $email;
 			return !$this->setError(false);
 		}
+		if (isset($params['maxlength']) && strlen($email) >= $params['maxlength']){
+			$msg = "E-Mail is too long (Maximum length: {$params['maxlength']})";
+			return !$this->setError(true, 200, $msg);
+		}
 		$re = '/^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})$/';
 		if ($email !== '' && (filter_var($email, FILTER_VALIDATE_EMAIL) === false || !preg_match($re, $email) )){
 			return !$this->setError(true, 200, "mail validation failed", 'mail validation failed');
@@ -443,7 +468,7 @@ class Validator {
 			return !$this->setError(false);
 		}
 	}
-	
+
 	/**
 	 * phone validator
 	 *
@@ -463,12 +488,12 @@ class Validator {
 		}
 		return !$this->setError(false);
 	}
-	
+
 	/**
 	 * name validator
 	 *
 	 * @param $value
-	 * $param
+	 * @param array $params
 	 *  minlength 2		minimum string length
 	 *  maxlength 2		maximum string length - default 127, set -1 for unlimited value
 	 *  error	  2 	replace whole error message on error case
@@ -483,7 +508,7 @@ class Validator {
 			$this->filtered = '';
 			return !$this->setError(false);
 		}
-		$re = '';
+		$re = NULL;
 		$re_no_sep = '/^[a-zA-Z0-9äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]+[a-zA-Z0-9\-_ .äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*[a-zA-Z0-9äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]+$/';
 		if (!isset($params['multi']) || strlen($params['multi']) != 1 ){
 			$re = $re_no_sep;
@@ -526,7 +551,7 @@ class Validator {
 		}
 		return !$this->setError(false);
 	}
-	
+
 	/**
 	 * url validator
 	 *
@@ -544,7 +569,7 @@ class Validator {
 		}
 		return !$this->setError(false);
 	}
-	
+
 	/**
 	 * ip validator
 	 * check if string is a valid ip address (supports ipv4 and ipv6)
@@ -560,7 +585,7 @@ class Validator {
 			return !$this->setError(true, 200, 'No ip address', 'No ip address');
 		}
 	}
-	
+
 	/**
 	 * check if string is a valid ip address (supports ipv4 and ipv6)
 	 * helper function
@@ -580,7 +605,7 @@ class Validator {
 			}
 		}
 	}
-	
+
 	/**
 	 * check if string is ends with other string
 	 * @param string $haystack
@@ -604,7 +629,7 @@ class Validator {
 			return substr($haystack, -strlen($needle))===$needle;
 		}
 	}
-	
+
 	/**
 	 * domain validator
 	 *
@@ -641,7 +666,7 @@ class Validator {
 							}
 				}
 	}
-	
+
 	/**
 	 * regex validator
 	 *
@@ -709,7 +734,7 @@ class Validator {
 		}
 		return !$this->setError(false);
 	}
-	
+
 	/**
 	 * password validator
 	 *
@@ -725,7 +750,7 @@ class Validator {
 	 */
 	public function V_password($value, $params = []) {
 		$p = trim(strip_tags(''.$value));
-	
+
 		if (in_array('empty', $params, true) && $p === ''){
 			$this->filtered = $p;
 			return !$this->setError(false);
@@ -744,7 +769,7 @@ class Validator {
 		$this->filtered=$p;
 		return !$this->setError(false);
 	}
-	
+
 	/**
 	 * name validator
 	 *
@@ -762,7 +787,7 @@ class Validator {
 		}
 		return !$this->setError(false);
 	}
-	
+
 	/**
 	 * color validator
 	 *
@@ -780,7 +805,7 @@ class Validator {
 		}
 		return !$this->setError(false);
 	}
-	
+
 	/**
 	 * filename validator
 	 *
@@ -804,7 +829,7 @@ class Validator {
 		}
 		return !$this->setError(false);
 	}
-	
+
 	/**
 	 * time validator
 	 *
@@ -838,7 +863,7 @@ class Validator {
 			}
 		}
 	}
-	
+
 	/**
 	 * array validator
 	 * test if element is array
@@ -911,7 +936,7 @@ class Validator {
 		$this->filtered = $out;
 		return !$this->isError;
 	}
-	
+
 	/**
 	 * arraymap validator
 	 * run validator on array and given map
@@ -936,7 +961,7 @@ class Validator {
 		}
 		return !$this->isError;
 	}
-	
+
 	/**
 	 * date validator
 	 *
@@ -966,7 +991,7 @@ class Validator {
 		}
 		return !$this->setError(false);
 	}
-	
+
 	/**
 	 * array validator
 	 * test if string is valid iban
@@ -980,7 +1005,7 @@ class Validator {
 	 * @param array $params
 	 * @return boolean
 	 */
-	public function V_iban($value, $params){
+	public function V_iban($value, $params = []){
 		$iban = trim(strip_tags(''.$value));
 		$iban = strtoupper($iban); // to upper
 		$iban = preg_replace('/(\s|\n|\r)/', '', $iban); //remove white spaces
@@ -998,33 +1023,34 @@ class Validator {
 		}
 		return !$this->setError(false);
 	}
-	
+
 	/**
-	 * check if string is valid iban, 
-	 * 
+	 * check if string is valid iban,
+	 *
 	 * @param $iban iban srstring to check
 	 *
 	 * @return bool
 	 * @see https://en.wikipedia.org/wiki/International_Bank_Account_Number#Validating_the_IBAN
 	 */
 	public static function _checkIBAN($iban){
+		if ($iban == '') return false;
 		$iban = strtoupper(str_replace(' ', '', $iban));
-		$Countries = ARRAY('AL' => 28, 'AD' => 24, 'AT' => 20, 'AZ' => 28, 'BH' => 22, 'BE' => 16, 'BA' => 20, 'BR' => 29, 'BG' => 22, 'CR' => 21, 'HR' => 21, 'CY' => 28, 'CZ' => 24, 'DK' => 18, 'DO' => 28, 'EE' => 20, 'FO' => 18, 'FI' => 18, 'FR' => 27, 'GE' => 22, 'DE' => 22, 'GI' => 23, 'GR' => 27, 'GL' => 18, 'GT' => 28, 'HU' => 28, 'IS' => 26, 'IE' => 22, 'IL' => 23, 'IT' => 27, 'JO' => 30, 'KZ' => 20, 'KW' => 30, 'LV' => 21, 'LB' => 28, 'LI' => 21, 'LT' => 20, 'LU' => 20, 'MK' => 19, 'MT' => 31, 'MR' => 27, 'MU' => 30, 'MC' => 27, 'MD' => 24, 'ME' => 22, 'NL' => 18, 'NO' => 15, 'PK' => 24, 'PS' => 29, 'PL' => 28, 'PT' => 25, 'QA' => 29, 'RO' => 24, 'SM' => 27, 'SA' => 24, 'RS' => 22, 'SK' => 24, 'SI' => 19, 'ES' => 24, 'SE' => 24, 'CH' => 21, 'TN' => 24, 'TR' => 26, 'AE' => 23, 'GB' => 22, 'VG' => 24);
-		
+		$countries = array('AL' => 28, 'AD' => 24, 'AT' => 20, 'AZ' => 28, 'BH' => 22, 'BE' => 16, 'BA' => 20, 'BR' => 29, 'BG' => 22, 'CR' => 21, 'HR' => 21, 'CY' => 28, 'CZ' => 24, 'DK' => 18, 'DO' => 28, 'EE' => 20, 'FO' => 18, 'FI' => 18, 'FR' => 27, 'GE' => 22, 'DE' => 22, 'GI' => 23, 'GR' => 27, 'GL' => 18, 'GT' => 28, 'HU' => 28, 'IS' => 26, 'IE' => 22, 'IL' => 23, 'IT' => 27, 'JO' => 30, 'KZ' => 20, 'KW' => 30, 'LV' => 21, 'LB' => 28, 'LI' => 21, 'LT' => 20, 'LU' => 20, 'MK' => 19, 'MT' => 31, 'MR' => 27, 'MU' => 30, 'MC' => 27, 'MD' => 24, 'ME' => 22, 'NL' => 18, 'NO' => 15, 'PK' => 24, 'PS' => 29, 'PL' => 28, 'PT' => 25, 'QA' => 29, 'RO' => 24, 'SM' => 27, 'SA' => 24, 'RS' => 22, 'SK' => 24, 'SI' => 19, 'ES' => 24, 'SE' => 24, 'CH' => 21, 'TN' => 24, 'TR' => 26, 'AE' => 23, 'GB' => 22, 'VG' => 24);
+
 		//1. check country code exists + iban has valid length
-		if( !array_key_exists(substr($iban,0,2), $Countries)
-			|| strlen($iban) != $Countries[substr($iban,0,2)]){
+		if( !array_key_exists(substr($iban,0,2), $countries)
+			|| strlen($iban) != $countries[substr($iban,0,2)]){
 			return false;
 		}
-		
+
 		//2. Rearrange countrycode and checksum
 		$rearranged = substr($iban, 4) . substr($iban, 0, 4);
-		
+
 		//3. convert to integer
 		$iban_letters = str_split($rearranged);
 		$iban_int_only = '';
-		foreach ($iban_int_only as $char){
-			if (is_int($char)) $iban_int_only .= $char;
+		foreach ($iban_letters as $char){
+			if (is_numeric($char)) $iban_int_only .= $char;
 			else {
 				$ord = ord($char) - 55; // ascii representation - 55, so a => 10, b => 11, ...
 				if ($ord >= 10 && $ord <= 35){
@@ -1034,15 +1060,15 @@ class Validator {
 				}
 			}
 		}
-		
+
 		//4. calculate mod 97 -> have to be 1
-		if (self::_bcmod($iban_int_only, '97') == 1){
+		if (self::_bcmod($iban_int_only, '97') === 1){
 			return true;
 		}else{
 			return false;
 		}
 	}
-	
+
 	/**
 	 * _bcmod - get modulus (substitute for bcmod)
 	 * be careful with big $modulus values
@@ -1056,7 +1082,7 @@ class Validator {
 	 **/
 	public static function _bcmod($left_operand, $modulus){
 		if (function_exists('bcmod')){
-			return bcmod($left_operand, $modulus);
+			return (int)bcmod($left_operand, $modulus);
 		} else {
 			$take = 5; // how many numbers to take at once?
 			$mod = '';
@@ -1067,11 +1093,16 @@ class Validator {
 				$mod = $a % $modulus;
 			}
 			while ( strlen($left_operand) );
-	
+
 			return (int)$mod;
 		}
 	}
-	
+
+	/**
+	 * capsule function for array and arraymap validator
+	 * adds [ and ] to $this->lastMapKey and return this string
+	 * used on error messages in mentioned functions
+	 **/
 	private function _capsule_lastMapKey(){
 		$capsuled = $this->lastMapKey;
 		if ($capsuled != ''){

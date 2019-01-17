@@ -172,7 +172,7 @@ class TexBuilder{
                 'maxlength' => '255',
                 'error' => "Ungültiger Konsul name."
             ],
-            'skills' => [ 'array',
+            'skills' => ['array',
                 'validator' => ['regex',
                     'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                     'maxlength' => '500',
@@ -185,8 +185,8 @@ class TexBuilder{
                     'required' => true,
                     'map' => [
                         'checked' => ['integer',
-                            'min' => '1',
-                            'error' => 'Some checking error.'
+                            'min' => '0',
+                            'error' => 'Some id checking error.'
                         ],
                         'von' => ['date',
                             'format' => 'Y-m-d',
@@ -223,35 +223,100 @@ class TexBuilder{
                 'trim',
             ],
         ],
+        'zahlungsanweisung' => [
+            'projekt-id' => ['id'],
+            'projekt-name' => ['text'],
+            'projekt-org' => ['text'],
+            'projekt-recht' => ['regex',
+                'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+                'maxlength' => '255',
+                'error' => 'Ungültiges Recht.'
+            ],
+            'projekt-create' => ['date',
+                'format' => 'Y-m-d H:i:s',
+                'parse' => 'y',
+                'error' => 'Kein Erstellungsdatum des Projektes',
+            ],
+            'auslage-id' => ['id'],
+            'auslage-name' => ['text'],
+            'zahlung-name' => ['regex',
+                'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+                'maxlength' => '255',
+                'error' => 'Ungültiger Empfänger Name.'
+            ],
+            'zahlung-iban' => ['iban',
+            ],
+            'zahlung-value' => ['float',
+                'format' => '2',
+                'decimal' => '.',
+                'parse' => 'money',
+                'error' => 'Ungültiger Value'
+            ],
+            'zahlung-adresse' => ['text'],
+            'details' => ['array',
+                'optional',
+                'empty',
+                //'minlength' => 1,
+                'key' => ['regex',
+                    'pattern' => '/^(\d+)$/'
+                ],
+                'validator' => ['arraymap',
+                    'required' => true,
+                    'map' => [
+                        'beleg-id' => ["text"
+                        ],
+                        'titel' => ['text', 'trim', 'regex',
+                            'pattern' => '/^[0-9 ]*$/',
+                            'maxlength' => '255',
+                            'error' => 'Ungültiger Titel'
+                        ],
+                        'einnahmen' => ['float',
+                            'min' => '0',
+                            'format' => '2',
+                            'decimal' => '.',
+                            'parse' => 'money',
+                            'error' => 'Ungültige Einnahme'
+                        ],
+                        'ausgaben' => ['float',
+                            'min' => '0',
+                            'format' => '2',
+                            'decimal' => '.',
+                            'parse' => 'money',
+                            'error' => 'Ungültige Ausgabe'
+                        ],
+                    ]
+                ]
+            ]
+        ],
     ];
-    
+
     /**
      *
      * @var Validator
      */
     private $validator;
-    
+
     /**
      * is error and error message
      *
      * @var bool|string
      */
     private $error = false;
-    
+
     /**
      * last valid key
      *
      * @var bool|string
      */
     private $last_key = false;
-    
+
     /**
      * @var binary pdf file data
      */
     private $binary_build;
-    
+
     // constructor --------------------
-    
+
     /**
      * class constructor
      */
@@ -259,9 +324,9 @@ class TexBuilder{
         $this->validator = new Validator();
         $this->error = false;
     }
-    
+
     // getter / setter --------------------
-    
+
     /**
      * escape latex invalid letters
      *
@@ -269,23 +334,23 @@ class TexBuilder{
      *
      * @return string
      */
-    private static function texEscape($in){
+    public static function texEscape($in){
         return str_replace(
             ['\\', '~', '_', '%', '$', '&', '^', '"', '{', '}'],
             ['\textbackslash', '\textasciitilde', '\_', '\%', '\$', '\&', '^', "''", '\{', '\}'],
             $in
         );
     }
-    
+
     // helper -----------------------------
-    
+
     /**
      * @return the $error
      */
     public function getError(){
         return $this->error;
     }
-    
+
     /**
      * validate Post or $data variables by builderKey
      * alias of validate
@@ -298,7 +363,7 @@ class TexBuilder{
     public function setData($key, $data = null){
         return $this->validate($key, $data);
     }
-    
+
     /**
      * validate Post or $data variables by builderKey
      *
@@ -318,14 +383,19 @@ class TexBuilder{
                 $this->error = false;
                 $this->last_key = $key;
                 return true;
-            } else {
-                $this->error = $this->validator->getLastErrorMsg();
+            }else{
+                if ($this->validator->getLastErrorMsg() == 'Access Denied'){
+                    error_log("Error: Access Denied; Target: $key; Description: " . $this->validator->getLastErrorDescription());
+                    $this->error = $this->validator->getLastErrorMsg() . ' - ' . $this->validator->getLastErrorDescription();
+                }else{
+                    $this->error = $this->validator->getLastErrorMsg();
+                }
                 $this->last_key = false;
                 return false;
             }
         }
     }
-    
+
     /**
      * check if pdf builder exists
      *
@@ -334,7 +404,7 @@ class TexBuilder{
     public function builderExist($key){
         return (isset(self::$valiMap[$key]));
     }
-    
+
     /**
      * return validated and filtered request data
      *
@@ -343,9 +413,9 @@ class TexBuilder{
     public function getValidated(){
         return $this->validator->getFiltered();
     }
-    
+
     // build pdf ------------------------------------
-    
+
     /**
      * build pdf
      */
@@ -358,16 +428,19 @@ class TexBuilder{
                     if (($f = tempnam(sys_get_temp_dir(), 'tex-tmp-')) === false){
                         $this->error = "Failed to create temporary file";
                         foreach ($files as $v){
-                            if (file_exists($v)) unlink($v);
+                            if (!DEBUG_DO_NOT_DELETE__TEX_PDF && file_exists($v))
+                                unlink($v);
                         }
-                        return;
+                        return false;
                     }
+                    //remove empty file again
                     if (file_exists($f)) unlink($f);
+                    //set file with actual content
                     file_put_contents($f . '.pdf', base64_decode($b['file']));
                     $files[str_pad($b['id'], 3, "0", STR_PAD_LEFT) . '-B' . $b['short']] = $f . '.pdf';
                 }
             }
-            
+
             $validated = $this->validator->getFiltered();
             $validated['files'] = $files;
             //get tex code
@@ -375,13 +448,15 @@ class TexBuilder{
             //render twice
             $this->_createPDF($tex);
             //remove inline images
-            foreach ($files as $v){
-                if (file_exists($v)) unlink($v);
+            if (!DEBUG_DO_NOT_DELETE__TEX_PDF){
+                foreach ($files as $v){
+                    if (file_exists($v)) unlink($v);
+                }
             }
             return true;
         }
     }
-    
+
     /**
      * render tex code
      *
@@ -398,7 +473,7 @@ class TexBuilder{
         }
         return $tex;
     }
-    
+
     /**
      * create pdf file set binary code
      */
@@ -408,34 +483,35 @@ class TexBuilder{
             $this->error = "Failed to create temporary file";
             return;
         }
-        
+
         $tex_f = $f . ".tex";
         $aux_f = $f . ".aux";
         $log_f = $f . ".log";
         $pdf_f = $f . ".pdf";
-        
+
         //write file to tmp file
         file_put_contents($tex_f, $tex_code);
         //switch to directory
         chdir(sys_get_temp_dir());
-        
+
         //run command
-        $shellcmd = "pdflatex \"\\input{" . $tex_f . '}"';
-        
+        $shellcmd = SHELL_LATEX_COMMAND." \"\\input{" . $tex_f . '}" 2>&1';
+
         $status = -100;
         exec($shellcmd, $out, $status);
-        //render twice -> page numbers, etc.
+        //render twice -> for page numbers, etc.
         exec($shellcmd, $out, $status);
-        
+
         //unlink files
-        if (file_exists($tex_f)) unlink($tex_f);
-        if (file_exists($aux_f)) unlink($aux_f);
-        if (file_exists($log_f)) unlink($log_f);
-        
+        if (!DEBUG_DO_NOT_DELETE__TEX_PDF && file_exists($tex_f)) unlink($tex_f);
+        if (!DEBUG_DO_NOT_DELETE__TEX_PDF && file_exists($aux_f)) unlink($aux_f);
+        if (!DEBUG_DO_NOT_DELETE__TEX_PDF && file_exists($log_f)) unlink($log_f);
+
         // Test here
         if (!file_exists($pdf_f)){
             //unlink files
-            unlink($f);
+            if (!DEBUG_DO_NOT_DELETE__TEX_PDF)
+                unlink($f);
             $this->error = [
                 'msg' => "Output was not generated and latex returned: $status.",
                 'code' => $status,
@@ -444,17 +520,19 @@ class TexBuilder{
             ];
             return;
         }
-        
+
         //load file to memory
         $this->binary_build = file_get_contents($pdf_f);
-        
+
         //unlink files
-        unlink($pdf_f);
-        unlink($f);
+        if (!DEBUG_DO_NOT_DELETE__TEX_PDF){
+            unlink($pdf_f);
+            unlink($f);
+        }
     }
-    
+
     // private ----------------------------------------
-    
+
     /**
      * get pdf as base64 string
      *
@@ -469,7 +547,7 @@ class TexBuilder{
         }
         return null;
     }
-    
+
     /**
      * get binary pdf data
      *

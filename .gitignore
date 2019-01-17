@@ -1,19 +1,19 @@
 # https://git-scm.com/docs/gitignore
 # https://help.github.com/articles/ignoring-files
 # Example .gitignore files: https://github.com/github/gitignore
-*.aux
-*.log
-*.out
-*.pdf
+/old/*.aux
+/old/*.log
+/old/*.out
+/old/*.pdf
 *.synctex.gz
 .project
 .buildpath
 config/config.php
-*.settings/*
-!/img/stura-try.pdf
 /hiddenAPIKey.php
 old/hiddenAPIKey.php
 /parameter.tex
 /.fuse*
 *.idea
-
+/logs/*
+*.settings
+*.directory
