@@ -68,6 +68,7 @@ class Validator {
 	 * @param integer $code 	html code
 	 * @param string  $msg  	short message
 	 * @param string  $desc 	error description
+	 * @return bool
 	 */
 	private function setError($isError, $code=0, $msg='', $desc=''){
 		$this->isError = $isError;
@@ -78,7 +79,7 @@ class Validator {
 	}
 
 	/**
-	 * @return the $isError
+	 * @return boolean $isError
 	 */
 	public function getIsError()
 	{
@@ -86,7 +87,7 @@ class Validator {
 	}
 
 	/**
-	 * @return the $lastErrorMsg
+	 * @return string $lastErrorMsg
 	 */
 	public function getLastErrorMsg()
 	{
@@ -94,7 +95,7 @@ class Validator {
 	}
 
 	/**
-	 * @return the $lastErrorDescription
+	 * @return string $lastErrorDescription
 	 */
 	public function getLastErrorDescription()
 	{
@@ -102,7 +103,7 @@ class Validator {
 	}
 
 	/**
-	 * @return the $lastErrorCode
+	 * @return integer $lastErrorCode
 	 */
 	public function getLastErrorCode()
 	{
@@ -110,7 +111,7 @@ class Validator {
 	}
 
 	/**
-	 * @return the $lastMapKey
+	 * @return string $lastMapKey
 	 */
 	public function getLastMapKey()
 	{
@@ -120,7 +121,8 @@ class Validator {
 	/**
 	 * filter may sanitize input values are stored here
 	 * Post validators will create sanitized array
-	 * @return the $filtered
+	 * @param string $key
+	 * @return array|mixed $filtered
 	 */
 	public function getFiltered($key = NULL)
 	{
@@ -146,8 +148,12 @@ class Validator {
 			&& is_callable([$this, 'V_'.$validatorName]) ){
 			return $this->{'V_'.$validatorName}($value, $validatorParams);
 		} else {
-			$this->setError(true, 403, 'Access Denied', "POST unknown validator");
-			error_log("Validator: Unknown Validator: $validatorName");
+			$this->setError(true, 403, 'Access Denied', "POST unknown validator: $validatorName");
+			if (class_exists('\intbf\ErrorHandler')){
+				ErrorHandler::_errorLog("Validator: Unknown Validator: $validatorName", 'Validator: validate');
+			} else {
+				error_log("Validator: validate: Unknown Validator: $validatorName", 'Validator: validate');
+			}
 			return !$this->isError;
 		}
 	}
@@ -162,26 +168,60 @@ class Validator {
 	 *  ]
 	 *  validator may contains parameter 'optional' -> so required can be disabled per parameter
 	 *
+	 * @param array $source_unsafe
 	 * @param array $map
-	 * @param boolean $required key is required
+	 * @param boolean $required key is required, overwritable with validator parameter 'optional'
+	 * @param boolean $errormap don't break on error, and sum up all errors messages, does not affect required error, so dont answer incomplete posts, return errors fields as arrays
+	 * @param boolean $multi_validator allow multiple validators on same key, you have to set additional parameter 'multivalidator' and add additional array layer
+	 *		e.g.
+	 *			['key' => ['multi', ['validator1'], ['validator2'], ...]]
 	 * @return boolean
 	 */
-	public function validateMap($source_unsafe, $map, $required = true){
+	public function validateMap(&$source_unsafe, $map, $required = true, $errormap = false, $multi_validator = false){
 		$out = [];
+		$errorMsgs = [];
+		$errorDesc = [];
+		$errorCode = [];
+		$hasError = false;
 		foreach($map as $key => $validator){
 			$this->lastMapKey = $key;
 			if (!isset($source_unsafe[$key])){
-				if ($required && !in_array('optional', $validator)){
-					$this->setError(true, 403, 'Access Denied', "POST missing parameter: '$key'");
+				if ($required && !in_array('optional', $validator, true)){
+					$this->setError(true, 403, 'Access Denied', "missing parameter: '$key'");
 					return !$this->isError;
 				} else {
 					$this->setError(false);
 				}
 			} else {
-				$this->validate($source_unsafe[$key], $validator);
-				if ($this->isError) break;
-				$out[$key] = $this->filtered;
+				$tmp_vali = [];
+				if ($multi_validator && (($pos =  array_search('multivalidator' , $validator, true)) !== false)){
+					$tmp_vali = $validator;
+					unset($tmp_vali[$pos]);
+				} else {
+					$tmp_vali[] = $validator;
+				}
+				foreach($tmp_vali as $vali){
+					$this->validate($source_unsafe[$key], $vali);
+					if ($this->isError){
+						if ($errormap===true){
+							$hasError = true;
+							$errorMsgs[$key][] = $this->lastErrorMsg;
+							$errorDesc[$key][] = $this->lastErrorDescription;
+							$errorCode[$key][] = $this->lastErrorCode;
+						} else {
+							break 2;
+						}
+					} else {
+						$out[$key] = $this->filtered;
+					}
+				}
 			}
+		}
+		if ($hasError){
+			$this->isError = true;
+			$this->lastErrorCode = $errorCode;
+			$this->lastErrorMsg = $errorMsgs;
+			$this->lastErrorDescription = $errorDesc;
 		}
 		$this->filtered = $out;
 		return !$this->isError;
@@ -557,13 +597,23 @@ class Validator {
 	 *
 	 * @param $value
 	 * @param $params
+	 * 	empty	  		1 	allow empty value
+	 * 	error	 		2 	replace whole error message on error case
+	 *  forceprotocol	1	force http://|https:// in url
+	 *  forceslash		1	force trailingslash
 	 * @return boolean
 	 */
 	public function V_url($value, $params = NULL)  {
 		$url = trim(strip_tags(''.$value));
-		$re = '/^((http[s]?)((:|%3A)\/\/))(((\w)+((-|\.)(\w+))*)+(\w){0,6}?(:([0-5]?[0-9]{1,4}|6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5])))))?\/)((\w)+((\.|-)(\w)+)*\/)*$/';
+		if (in_array('empty', $params, true) && $url === ''){
+			$this->filtered = '';
+			return !$this->setError(false);
+		}
+		$re = '/^((http[s]?)((:|%3A)\/\/))'.((in_array('forceprotocol', $params, true))?'':'?').'(((\w)+((-|\.)(\w+))*)+(\w){0,6}?(:([0-5]?[0-9]{1,4}|6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5])))))?\/'.((in_array('forceslash', $params, true))?'':'?').')((\w)+((\.|-)(\w)+)*\/'.((in_array('forceslash', $params, true))?'':'?').')*$/';
 		if (!preg_match($re, $url) || strlen($url) >= 128){
-			return !$this->setError(true, 200, "url validation failed", 'url validation failed');
+			$msg = "url validation failed";
+			if (isset($params['error'])) $msg = $params['error'];
+			return !$this->setError(true, 200, $msg, 'url validation failed');
 		} else {
 			$this->filtered=$url;
 		}
@@ -571,18 +621,354 @@ class Validator {
 	}
 
 	/**
+	 * client ip validator
+	 * check if string is a valid ip on whitelist, or not in blacklist (supports ipv4 and ipv6)
+	 * if value is not set function checks SERVER['REMOTE_ADDR'], so filtered value contains real client IP
+	 * keep in mind, in array validation to set and override may given userinput to NULL, or set 'ignoreval' param
+	 * this function does not check if the given value contains a valid ip address
+	 * checks blacklist first
+	 *
+	 * v4subnet_black and v4subnet_white will only work with IPv4 IP addresses and clients
+	 *
+	 * @param mixed $value ignored
+	 * @param array $params
+	 *  	ignoreval		1 	ignore value - use $_SERVER['REMOTE_ADDR']
+	 *  	whitelist		2 	if set only allow client ips from this whitelist
+	 *  	blacklist		2 	if set block clients from this ips
+	 *  	subnet			1 	allow cidr subnets on black and whitelist format: '127.0.0.1/32' or '22AD:00DD:0000:1F33::/64'
+	 *  	v4subnet_white	2 	check if ip is in ip range, format: 127.0.0.1/32
+	 *  	error		  2	replace whole error message on error case
+	 * @return boolean
+	 */
+	public function V_clientIp($value = NULL, $params = NULL){
+		//ignore value?
+		if ($value === NULL||!is_string||empty($value)||in_array('ignoreval', $params, true)) $value = $_SERVER['REMOTE_ADDR'];
+		//check blacklist
+		if (isset($params['blacklist']) && is_array($params['blacklist']) && in_array( $value, $params['blacklist'], true)){
+			$msg = ((isset($params['error']) )?$params['error']:'Blocked ip address.');
+			return !$this->setError(true, 200, $msg, 'Blocked ip address.');
+		}
+		if (isset($params['blacklist']) && is_array($params['blacklist']) && in_array( 'subnet', $params, true)){
+			foreach($params['blacklist'] as $b){
+				if (strpos($b, '/') !== false){
+					if ($this->V_ipCidr($value, ['onlyreturn', 'cidr' => $b])){
+						$msg = ((isset($params['error']) )?$params['error']:'Blocked ip address.');
+						return !$this->setError(true, 200, $msg, 'Blocked ip address.');
+					}
+				}
+			}
+		}
+		//check whitelist
+		$found = false;
+		if (isset($params['whitelist']) && is_array($params['whitelist']) && in_array( 'subnet', $params, true)){
+			$found = in_array( $value, $params['whitelist'], true);
+			if (!$found) foreach($params['whitelist'] as $w){
+				if (strpos($w, '/') !== false){
+					if ($this->V_ipCidr($value, ['onlyreturn', 'cidr' => $w])){
+						$found = true;
+						break;
+					}
+				}
+			}
+		}
+		if (!$found && isset($params['whitelist']) && (!is_array($params['whitelist']) || !in_array( $value, $params['whitelist'], true))){
+			$msg = ((isset($params['error']) )?$params['error']:'Blocked ip address.');
+			return !$this->setError(true, 200, $msg, 'Blocked ip address.');
+		}
+
+		$this->filtered = $value;
+		return !$this->setError(false);
+	}
+
+	/**
+	 * ip v4 validator
+	 * check if string is a valid ip v4 address
+	 * @param $value
+	 *		no_priv_range	1	prevent private address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		no_res_range	1	prevent reservated address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		error			2	replace whole error message on error case
+	 *		onlyreturn		1	dont set $this->filtered or $this->error - required for other validators - return false or valid value
+	 * @param array $params
+	 * @return boolean
+	 */
+	public function V_ip4($value = NULL, $params = []){
+    	$flag = FILTER_FLAG_IPV4;
+		if (in_array('no_priv_range', $params, true)){
+			$flag = $flag | FILTER_FLAG_NO_PRIV_RANGE;
+		}
+		if (in_array('no_res_range', $params, true)){
+			$flag = $flag | FILTER_FLAG_NO_RES_RANGE;
+		}
+		$r = filter_var(
+	        $value,
+	        FILTER_VALIDATE_IP,
+	        array('flags' => $flag)
+	    );
+		if (!$r && !in_array('onlyreturn', $params, true)){
+			$msg = ((isset($params['error']) )?$params['error']:'Invalid IPv4.');
+			return !$this->setError(true, 200, $msg, 'Invalid IPv4.');
+		} elseif ($r && !in_array('onlyreturn', $params, true)) {
+			$this->filtered = $r;
+			return !$this->setError(false);
+		} elseif(!$r) {
+			return false;
+		} else {
+			return $r;
+		}
+	}
+
+	/**
+	 * ip v6 validator
+	 * check if string is a valid ip v6 address
+	 * @param $value
+	 *		no_priv_range	1	prevent private address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		no_res_range	1	prevent reservated address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		error			2	replace whole error message on error case
+	 *		onlyreturn		1	dont set $this->filtered or $this->error - required for other validators - return false or valid value
+	 * @param array $params
+	 * @return boolean
+	 */
+	public function V_ip6($value = NULL, $params = []){
+    	$flag = FILTER_FLAG_IPV6;
+		if (in_array('no_priv_range', $params, true)){
+			$flag = $flag | FILTER_FLAG_NO_PRIV_RANGE;
+		}
+		if (in_array('no_res_range', $params, true)){
+			$flag = $flag | FILTER_FLAG_NO_RES_RANGE;
+		}
+		$r = filter_var(
+	        $value,
+	        FILTER_VALIDATE_IP,
+	        array('flags' => $flag)
+	    );
+		if (!$r && !in_array('onlyreturn', $params, true)){
+			$msg = ((isset($params['error']) )?$params['error']:'Invalid IPv6.');
+			return !$this->setError(true, 200, $msg, 'Invalid IPv6.');
+		} elseif ($r && !in_array('onlyreturn', $params, true)) {
+			$this->filtered = $r;
+			return !$this->setError(false);
+		} elseif(!$r) {
+			return false;
+		} else {
+			return $r;
+		}
+	}
+
+	/**
 	 * ip validator
 	 * check if string is a valid ip address (supports ipv4 and ipv6)
 	 * @param $value
-	 * @param $params
+	 *		getversion		1	do not only return valid value, do also return ip version -> return value: [$value, version]
+	 *		no_priv_range	1	prevent private address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		no_res_range	1	prevent reservated address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		error			2	replace whole error message on error case
+	 *		onlyreturn		1	dont set $this->filtered or $this->error - required for other validators - return false or valid value
+	 * @param array $params
 	 * @return boolean
 	 */
-	public function V_ip($value, $params = NULL){
+	public function V_ip($value, $params = []){
+		$tmp_p = ['onlyreturn'];
+		if (in_array('no_priv_range', $params, true)) $tmp_p[] = 'no_priv_range';
+		if (in_array('no_res_range', $params, true)) $tmp_p[] = 'no_res_range';
+		if ($v4 = $this->V_ip4( $value, $tmp_p )){
+			if (!in_array('onlyreturn', $params, true)) $this->filtered = (in_array('getversion', $params, true))? [$v4, 4] : $v4;
+			return (in_array('onlyreturn', $params, true))? ($v4) : (!$this->setError(false));
+		} elseif ($v6 = $this->V_ip6( $value, $tmp_p )){
+			if (!in_array('onlyreturn', $params, true)) $this->filtered = (in_array('getversion', $params, true))? [$v6, 6] : $v6;
+			return (in_array('onlyreturn', $params, true))? ($v6) : (!$this->setError(false));
+		} else {
+			$msg = ((isset($params['error']) )?$params['error']:'Invalid IP.');
+			return (in_array('onlyreturn', $params, true))? (false) : !$this->setError(true, 200, $msg, 'Invalid IP.');
+		}
+	}
+
+	/**
+	 * ipv4 cidr(subnet) validator
+	 * check if string is in given ip range - given in cidr format
+	 *
+	 * partial based on, see in line comment
+	 * @see https://stackoverflow.com/questions/594112/matching-an-ip-to-a-cidr-mask-in-php-5#14841828
+	 *
+	 * @param $value
+	 *		cidr (required)	2	cidr e.g. 127.0.0.1/32
+	 *		no_priv_range	1	prevent private address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		no_res_range	1	prevent reservated address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		error			2	replace whole error message on error case
+	 *		onlyreturn		1	dont set $this->filtered or $this->error - required for other validators - return false or valid value
+	 * @param array $params
+	 * @throws \Exception
+	 * @return boolean
+	 */
+	public function V_ipv4Cidr($value, $params = []){
+		$tmp_p = ['onlyreturn'];
+		if (in_array('no_priv_range', $params, true)) $tmp_p[] = 'no_priv_range';
+		if (in_array('no_res_range', $params, true)) $tmp_p[] = 'no_res_range';
+		// check cidr
+		if (!isset($params['cidr']) || !is_string($params['cidr']) || empty($params['cidr']) ) {
+			throw new \Exception('Validator[ipv4Cidr]: Missing cidr parameter.');
+		}
+		$cidr = explode('/', $params['cidr']);
+        $subnet = isset($cidr[0]) ? $cidr[0] : NULL;
+        $mask   = isset($cidr[1]) ? $cidr[1] : NULL;
+		if ($subnet === null || empty($subnet) || !filter_var($subnet, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            throw new \Exception('Validator[ipv4Cidr]: Invalid cidr parameter, missing or invalid subnet');
+        }
+	    if ($mask === null || empty($mask) || $mask < 0 || $mask > 32) {
+            throw new \Exception('Validator[ipv4Cidr]: Invalid cidr parameter, missing or invalid mask');
+        }
+		// check is ip v4
+		if ($v4 = $this->V_ip4( $value, $tmp_p )){
+			// if condition -> based on: https://stackoverflow.com/questions/594112/matching-an-ip-to-a-cidr-mask-in-php-5#14841828
+			if ((ip2long($v4) & ~((1 << (32 - $mask)) - 1) ) == ip2long($subnet)){
+				if (!in_array('onlyreturn', $params, true)) $this->filtered = $v4;
+				return (in_array('onlyreturn', $params, true))? ($v4) : (!$this->setError(false));
+			} else {
+				$msg = ((isset($params['error']) )?$params['error']:'No IPv4 cidr match.');
+				return (in_array('onlyreturn', $params, true))? (false) : !$this->setError(true, 200, $msg, 'No IPv4 cidr match.');
+			}
+		} else {
+			$msg = ((isset($params['error']) )?$params['error']:'Invalid IPv4.');
+			return (in_array('onlyreturn', $params, true))? (false) : !$this->setError(true, 200, $msg, 'Invalid IPv4.');
+		}
+	}
+
+	/**
+	 * ipv6 cidr(subnet) validator
+	 * check if string is in given ip range - given in cidr format
+	 *
+	 * partial based on, see in line comment
+	 * @see https://stackoverflow.com/questions/7951061/matching-ipv6-address-to-a-cidr-subnet#7952169
+	 *
+	 * @param $value
+	 *		cidr (required)	2	cidr e.g. '22AD:00DD:0000:1F33::/64'
+	 *		no_priv_range	1	prevent private address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		no_res_range	1	prevent reservated address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		error			2	replace whole error message on error case
+	 *		onlyreturn		1	dont set $this->filtered or $this->error - required for other validators - return false or valid value
+	 * @param array $params
+	 * @throws \Exception
+	 * @return boolean
+	 */
+	public function V_ipv6Cidr($value, $params = []){
+		$tmp_p = ['onlyreturn'];
+		if (in_array('no_priv_range', $params, true)) $tmp_p[] = 'no_priv_range';
+		if (in_array('no_res_range', $params, true)) $tmp_p[] = 'no_res_range';
+		// check cidr
+		if (!isset($params['cidr']) || !is_string($params['cidr']) || empty($params['cidr']) ) {
+			throw new \Exception('Validator[ipv6Cidr]: Missing cidr parameter.');
+		}
+		$cidr = explode('/', $params['cidr']);
+        $subnet = isset($cidr[0]) ? $cidr[0] : NULL;
+        $mask   = isset($cidr[1]) ? $cidr[1] : NULL;
+		if ($subnet === null || empty($subnet)) {
+            throw new \Exception('Validator[ipv6Cidr]: Invalid cidr parameter, missing or invalid subnet');
+        }
+	    if ($mask === null || empty($mask) || $mask < 0 || $mask > 128) {
+            throw new \Exception('Validator[ipv6Cidr]: Invalid cidr parameter, missing or invalid mask');
+        }
+		// check is ip v6
+		if ($v6 = $this->V_ip6( $value, $tmp_p )){
+			// until if condition -> based on: https://stackoverflow.com/questions/7951061/matching-ipv6-address-to-a-cidr-subnet#7952169
+			$subnet = inet_pton($subnet);
+        	$addr = inet_pton($v6);
+			// iPv6MaskToByteArray
+			$mask_tmp = $mask;
+			  $addr_tmp = str_repeat("f", $mask_tmp / 4);
+			  switch ($mask_tmp % 4) {
+				case 0:
+				  break;
+				case 1:
+				  $addr_tmp .= "8";
+				  break;
+				case 2:
+				  $addr_tmp .= "c";
+				  break;
+				case 3:
+				  $addr_tmp .= "e";
+				  break;
+			  }
+			  $addr_tmp = str_pad($addr_tmp, 32, '0');
+			  $addr_tmp = pack("H*" , $addr_tmp);
+			  $mask_bin = $addr_tmp;
+			// ---
+        	$match = (($addr & $mask_bin) == $subnet);
+			if ($match){
+				if (!in_array('onlyreturn', $params, true)) $this->filtered = $v6;
+				return (in_array('onlyreturn', $params, true))? ($v6) : (!$this->setError(false));
+			} else {
+				$msg = ((isset($params['error']) )?$params['error']:'No IPv6 cidr match.');
+				return (in_array('onlyreturn', $params, true))? (false) : !$this->setError(true, 200, $msg, 'No IPv6 cidr match.');
+			}
+		} else {
+			$msg = ((isset($params['error']) )?$params['error']:'Invalid IPv6.');
+			return (in_array('onlyreturn', $params, true))? (false) : !$this->setError(true, 200, $msg, 'Invalid IPv6.');
+		}
+	}
+
+	/**
+	 * ip cidr(subnet) validator
+	 * check if string is in given ip range - given in cidr format
+	 *
+	 * @param $value
+	 *		cidr (required)	2	cidr e.g. '22AD:00DD:0000:1F33::/64' or '127.0.0.1/32'
+	 *		no_priv_range	1	prevent private address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		no_res_range	1	prevent reservated address range to be validated as true @see http://php.net/manual/de/filter.filters.flags.php
+	 *		error			2	replace whole error message on error case
+	 *		onlyreturn		1	dont set $this->filtered or $this->error - required for other validators - return false or valid value
+	 * @param array $params
+	 * @throws \Exception
+	 * @return boolean
+	 */
+	public function V_ipCidr($value, $params = []){
+		$tmp_p = ['onlyreturn'];
+		if (in_array('no_priv_range', $params, true)) $tmp_p[] = 'no_priv_range';
+		if (in_array('no_res_range', $params, true)) $tmp_p[] = 'no_res_range';
+		// check cidr
+		if (!isset($params['cidr']) || !is_string($params['cidr']) || empty($params['cidr']) ) {
+			throw new \Exception('Validator[ipCidr]: Missing cidr parameter.');
+		} else {
+			$tmp_p['cidr'] = $params['cidr'];
+		}
+		$cidr = explode('/', $params['cidr']);
+        $subnet = isset($cidr[0]) ? $cidr[0] : NULL;
+        $mask   = isset($cidr[1]) ? $cidr[1] : NULL;
+
+		if ($subnet === null || empty($subnet)) {
+            throw new \Exception('Validator[ipCidr]: Invalid cidr parameter, missing or invalid subnet');
+        }
+	    if ($mask === null || empty($mask) || $mask < 0 || $mask > 128) {
+            throw new \Exception('Validator[ipCidr]: Invalid cidr parameter, missing or invalid mask');
+        }
+		//cidr version
+		$cidr_version = (filter_var($subnet, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))? 4 : 6;
+		if ($cidr_version == 4 && ($v4 = $this->V_ipv4cidr($value, $tmp_p))){
+			if (!in_array('onlyreturn', $params, true)) $this->filtered = $v4;
+			return (in_array('onlyreturn', $params, true))? ($v4) : (!$this->setError(false));
+		} elseif ($cidr_version == 6 && ($v6 = $this->V_ipv6cidr($value, $tmp_p))){
+			if (!in_array('onlyreturn', $params, true)) $this->filtered = $v6;
+			return (in_array('onlyreturn', $params, true))? ($v6) : (!$this->setError(false));
+		} else {
+			$msg = ((isset($params['error']) )?$params['error']:'No IP cidr match.');
+			return (in_array('onlyreturn', $params, true))? (false) : !$this->setError(true, 200, $msg, 'No IP cidr match.');
+		}
+	}
+
+	/**
+	 * ip validator (deprecated)
+	 * old implementation, php now provides this function
+	 * check if string is a valid ip address (supports ipv4 and ipv6)
+	 * @param $value
+	 *		error			2	replace whole error message on error case
+	 * @param array $params
+	 * @return boolean
+	 */
+	public function V_ipOld($value, $params = NULL){
 		if (self::isValidIP($value)){
 			$this->filtered = $value;
 			return !$this->setError(false);
 		} else {
-			return !$this->setError(true, 200, 'No ip address', 'No ip address');
+			$msg = ((isset($params['error']) )?$params['error']:'No ip address');
+			return !$this->setError(true, 200, $msg, 'No ip address');
 		}
 	}
 
@@ -591,7 +977,7 @@ class Validator {
 	 * helper function
 	 *
 	 * @param string $ipadr
-	 * @param $recursive if true also allowes IP address with surrounding brackets []
+	 * @param boolean $recursive if true also allowes IP address with surrounding brackets []
 	 * @return boolean
 	 */
 	public static function isValidIP( $ipadr, $recursive = true) {
@@ -649,41 +1035,45 @@ class Validator {
 		if ($this->V_ip($host)){
 			$this->filtered = $host;
 			return !$this->setError(false);
-		} else if ( preg_match("/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/", $host) &&
+		} else if ( preg_match('/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/', $host) &&
 			( (version_compare(PHP_VERSION, '7.0.0') >= 0) && filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)!==false  ||
 				(version_compare(PHP_VERSION, '7.0.0') < 0) ) ) {
-					$this->filtered = $host;
-					return !$this->setError(false);
-				} else {
-					$value_idn = idn_to_ascii($host);
-					if ( preg_match("/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/", $value_idn) &&
-						( (version_compare(PHP_VERSION, '7.0.0') >= 0) && filter_var($value_idn, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)!==false  ||
-							(version_compare(PHP_VERSION, '7.0.0') < 0) ) ) {
-								$this->filtered = $value_idn;
-								return !$this->setError(false);
-							} else {
-								return !$this->setError(true, 200, 'Kein gültiger Hostname angegeben' );
-							}
-				}
+			$this->filtered = $host;
+			return !$this->setError(false);
+		} else {
+			$value_idn = idn_to_ascii($host);
+			if ( preg_match('/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/', $value_idn) &&
+				( (version_compare(PHP_VERSION, '7.0.0') >= 0) && filter_var($value_idn, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)!==false  ||
+					(version_compare(PHP_VERSION, '7.0.0') < 0) ) ) {
+				$this->filtered = $value_idn;
+				return !$this->setError(false);
+			} else {
+				return !$this->setError(true, 200, 'Kein gültiger Hostname angegeben' );
+			}
+		}
 	}
 
 	/**
 	 * regex validator
 	 *
 	 * $param
-	 *  regex	   2	match pattern
-	 *  errorkey   2	replace 'regex' with errorkey on error case
-	 *  error	   2	replace whole error message on error case
-	 *  upper	   1	string to uppercase
-	 *  lower	   1	string to lower case
-	 *  replace    2	touple [search, replace] replace string
-	 *  minlength  2	minimum string length
-	 *  maxlength  2	maximum string length
-	 *  noTagStrip 1	disable tag strip before validation
-	 *  noTrim	   1	disable trim whitespaces
-	 *  trimLeft   2	trim Text on left side, parameter trim characters
-	 *  trimRight  2	trim Text on right side, parameter trim characters
-	 *  empty	   1	allow empty string if not in regex
+	 *  regex			2	match pattern
+	 *  strsplit		2	split string into parts and run regex on each part, here specify split length (integer), you may require this on large texts
+	 *  errorkey		2	replace 'regex' with errorkey on error case
+	 *  error			2	replace whole error message on error case
+	 *  upper			1	string to uppercase
+	 *  specialchars	1	add htmlspecialchar filter
+	 *  addslashes		1	add addslashes filter
+	 *  stripslashes	1	add stripslashes filter
+	 *  lower			1	string to lower case
+	 *  replace			2	touple [search, replace] replace string
+	 *  minlength		2	minimum string length
+	 *  maxlength		2	maximum string length
+	 *  noTagStrip		1	disable tag strip before validation
+	 *  noTrim			1	disable trim whitespaces
+	 *  trimLeft		2	trim Text on left side, parameter trim characters
+	 *  trimRight		2	trim Text on right side, parameter trim characters
+	 *  empty			1	allow empty string if not in regex
 	 *
 	 * @param $value
 	 * @param $params
@@ -691,6 +1081,15 @@ class Validator {
 	 */
 	public function V_regex($value, $params = ['pattern' => '/.*/']) {
 		$v = ''.$value;
+		if (in_array('specialchars', $params, true)){
+			$v = htmlspecialchars($v);
+		}
+		if (in_array('addslashes', $params, true)){
+			$v = addslashes($v);
+		}
+		if (in_array('stripslashes', $params, true)){
+			$v = stripslashes($v);
+		}
 		if (!in_array('noTagStrip', $params, true)){
 			$v = strip_tags($v);
 		}
@@ -716,20 +1115,30 @@ class Validator {
 		if (in_array('lower', $params, true)){
 			$v = strtolower($v);
 		}
-		if (isset($params['maxlength']) && strlen($v) >= $params['maxlength']){
+		if (isset($params['maxlength']) && strlen($v) > $params['maxlength']){
 			$msg = "String is too long (Maximum length: {$params['maxlength']})";
-			return !$this->setError(true, 200, $msg);
+			return !$this->setError(true, 200, (isset($params['error']))? $params['error']: $msg, $msg);
 		}
 		if (isset($params['minlength']) && strlen($v) < $params['minlength']){
 			$msg = "String is too short (Minimum length: {$params['minlength']})";
-			return !$this->setError(true, 200, $msg);
+			return !$this->setError(true, 200, (isset($params['error']))? $params['error']: $msg, $msg);
 		}
 		$re = $params['pattern'];
-		if (!preg_match($re, $v) || (isset($params['maxlength']) && strlen($v) >= $params['maxlength'])) {
-			$msg = ((isset($params['errorkey']) )?$params['errorkey']:'regex').' validation failed';
-			if (isset($params['error'])) $msg = $params['error'];
-			return !$this->setError(true, 200, $msg, $msg);
+		if (!isset($params['strsplit'])){
+			if (!preg_match($re, $v)) {
+				$msg = ((isset($params['errorkey']) )?$params['errorkey']:'regex').' validation failed';
+				return !$this->setError(true, 200, (isset($params['error']))? $params['error']: $msg, $msg);
+			} else {
+				$this->filtered=$v;
+			}
 		} else {
+			$split = str_split($v, $params['strsplit']);
+			foreach($split as $part){
+				if (!preg_match($re, $part)) {
+					$msg = ((isset($params['errorkey']) )?$params['errorkey']:'regex').' validation failed';
+					return !$this->setError(true, 200, (isset($params['error']))? $params['error']: $msg, $msg);
+				}
+			}
 			$this->filtered=$v;
 		}
 		return !$this->setError(false);
@@ -741,30 +1150,57 @@ class Validator {
 	 * $param
 	 *  minlength 2		minimum string length
 	 *  maxlength 2		maximum string length
-	 *  encrypt   1  	encrypt password
 	 *  empty	  1 	allow empty value
+	 *  encrypt	  1 	encrypt password - only available if Crypto class is defined
+	 *  hash	  1 	hash password	 - only available if Crypto class is defined
+	 *	error	   2	replace whole error message on error case
 	 *
 	 * @param $value
 	 * @param $params
+	 * @throws \Exception
 	 * @return boolean
 	 */
 	public function V_password($value, $params = []) {
 		$p = trim(strip_tags(''.$value));
-
 		if (in_array('empty', $params, true) && $p === ''){
 			$this->filtered = $p;
 			return !$this->setError(false);
 		}
 		if (isset($params['maxlength']) && strlen($p) >= $params['maxlength']){
 			$msg = "The password is too long (Maximum length: {$params['maxlength']})";
+			if (isset($params['error'])) $msg = $params['error'];
 			return !$this->setError(true, 200, $msg);
 		}
 		if (isset($params['minlength']) && strlen($p) < $params['minlength']){
 			$msg = "The password is too short (Minimum length: {$params['minlength']})";
+			if (isset($params['error'])) $msg = $params['error'];
 			return !$this->setError(true, 200, $msg);
 		}
-		if (in_array('encrypt', $params, true)){
-			$p = silmph_encrypt_key ($p, SILMPH_KEY_SECRET);
+		$emsg = NULL;
+		if (in_array('hash', $params, true)){
+			if (!class_exists('\intbf\Crypto')){
+				$emsg = 'Validator: Password: "hash" requires Crypto class to be loaded.';
+			} elseif(!defined('AUTH_PW_PEPPER')){
+				$emsg = 'Validator: Password: "hash": global constant AUTH_PW_PEPPER required.';
+			} else {
+				$p = Crypto::hashPassword($p.AUTH_PW_PEPPER);
+			}
+		} elseif (in_array('encrypt', $params, true)){
+			if (!class_exists('\intbf\Crypto')){
+				$emsg = 'Validator: Password: "encrypt" requires Crypto class to be loaded.';
+			} else {
+				$p = Crypto::pad_string($p);
+				$p = Crypto::encrypt_by_key_pw($p, Crypto::get_key_from_file(SYSBASE.'/secret.php'), CRYPTO_SECRET_KEY);
+			}
+		}
+		if (isset($emsg) && $emsg){
+			if (class_exists('\intbf\ErrorHandler')){
+				ErrorHandler::_errorTraceLog($emsg);
+			} else {
+				error_log($emsg);
+			}
+			if (isset($params['error'])) $emsg = $params['error'];
+			return !$this->setError(true, 200, $emsg);
 		}
 		$this->filtered=$p;
 		return !$this->setError(false);
@@ -775,13 +1211,27 @@ class Validator {
 	 *
 	 * @param $value
 	 * @param $params
+	 * 	empty		1 	allow empty value
+	 * 	maxlength	2	maximum string length
+	 *  error		2	replace whole error message on error case
 	 * @return boolean
 	 */
 	public function V_path($value, $params = NULL) {
 		$path = trim(strip_tags(''.$value));
+		if (in_array('empty', $params, true) && $path === ''){
+			$this->filtered = '';
+			return !$this->setError(false);
+		}
+		if (isset($params['maxlength']) && strlen($path) >= $params['maxlength']){
+			$msg = "The path is too long (Maximum length: {$params['maxlength']})";
+			if (isset($params['error'])) $msg = $params['error'];
+			return !$this->setError(true, 200, $msg);
+		}
 		$re = '/^((\w)+((\.|-)(\w)+)*)(\/(\w)+((\.|-)(\w)+)*)*$/';
-		if (!preg_match($re, $path) || strlen($path) >= 128){
-			return !$this->setError(true, 200, "path validation failed", 'path validation failed');
+		if (!preg_match($re, $path)){
+			$msg = "path validation failed";
+			if (isset($params['error'])) $msg = $params['error'];
+			return !$this->setError(true, 200, $msg, 'path validation failed');
 		} else {
 			$this->filtered=$path;
 		}
@@ -793,13 +1243,21 @@ class Validator {
 	 *
 	 * @param $value
 	 * @param $params
+	 * 	empty	  1 	allow empty value
+	 *  error	   2	replace whole error message on error case
 	 * @return boolean
 	 */
 	public function V_color($value, $params = NULL) {
 		$color = trim(strip_tags(''.$value));
+		if (in_array('empty', $params, true) && $color === ''){
+			$this->filtered = '';
+			return !$this->setError(false);
+		}
 		$re = '/^([a-fA-F0-9]){6}$/';
 		if (!preg_match($re, $color) || strlen($color) != 6){
-			return !$this->setError(true, 200, "color validation failed", 'color validation failed');
+			$msg = "color validation failed";
+			if (isset($params['error'])) $msg = $params['error'];
+			return !$this->setError(true, 200, $msg, 'color validation failed');
 		} else {
 			$this->filtered=$color;
 		}
@@ -943,7 +1401,7 @@ class Validator {
 	 *
 	 * $param
 	 *  map 		2 validation map
-	 *  reqired 	2 boolean, default false
+	 *  required 	2 boolean, default false
 	 *
 	 * @param array $a
 	 * @param array $params
@@ -1027,7 +1485,7 @@ class Validator {
 	/**
 	 * check if string is valid iban,
 	 *
-	 * @param $iban iban srstring to check
+	 * @param string $iban iban srstring to check
 	 *
 	 * @return bool
 	 * @see https://en.wikipedia.org/wiki/International_Bank_Account_Number#Validating_the_IBAN
@@ -1070,15 +1528,17 @@ class Validator {
 	}
 
 	/**
-	 * _bcmod - get modulus (substitute for bcmod)
+	 * bcmod - get modulus (substitute for bcmod)
 	 * be careful with big $modulus values
 	 *
 	 * @param string $left_operand <p>The left operand, as a string.</p>
 	 * @param int $modulus <p>The modulus, as a string. </p>
 	 *
 	 * based on
-	 * https://stackoverflow.com/questions/10626277/function-bcmod-is-not-available
+	 * @see https://stackoverflow.com/questions/10626277/function-bcmod-is-not-available
 	 * by Andrius Baranauskas and Laurynas Butkus :) Vilnius, Lithuania
+	 *
+	 * @return integer
 	 **/
 	public static function _bcmod($left_operand, $modulus){
 		if (function_exists('bcmod')){
