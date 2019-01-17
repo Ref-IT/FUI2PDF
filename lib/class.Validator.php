@@ -177,7 +177,7 @@ class Validator {
 	 *			['key' => ['multi', ['validator1'], ['validator2'], ...]]
 	 * @return boolean
 	 */
-	public function validateMap(&$source_unsafe, $map, $required = true, $errormap = false, $multi_validator = false){
+	public function validateMap($source_unsafe, $map, $required = true, $errormap = false, $multi_validator = false){
 		$out = [];
 		$errorMsgs = [];
 		$errorDesc = [];
@@ -354,7 +354,7 @@ class Validator {
 	 *			decimals		2	decimal count, 		 default: 2
 	 *			dec_point		2	dec point/seperator, default: ','
 	 *			thousands		2	thousands seperator, default: ''
-	 *			append			2	append after float value -> return value is no float, string instead, appends X to float value, e.g. ' EUR', or ' $', default: disabled
+	 *			append			2	appends XX to float value, e.g. ' EUR', or ' $', default: disabled
 	 *		error				2	error message on error case
 	 *
 	 * @param $value
@@ -397,16 +397,14 @@ class Validator {
 			} else {
 				$this->filtered = $v;
 			}
-			if (isset($params['parse']) && is_array($params['parse']){
-
-			$params['parse'] === 'money'){
+			if (isset($params['parse']) && is_array($params['parse'])) {
 				$this->filtered = number_format(
 					$v,
 					(isset($params['parse']['decimals']))? $params['parse']['decimals'] : 2,
 					(isset($params['parse']['dec_point']))? $params['parse']['dec_point'] : ',',
 					(isset($params['parse']['thousands']))? $params['parse']['thousands'] : ''
 				);
-				if (isset($params['parse']['append'])){
+				if (isset($params['parse']['append'])) {
 					$this->filtered = $this->filtered . $params['parse']['append'];
 				}
 			}

@@ -249,7 +249,9 @@ class TexBuilder{
             'zahlung-value' => ['float',
                 'format' => '2',
                 'decimal' => '.',
-                'parse' => 'money',
+                'parse' => [
+                        'append' => ' EUR'
+                ],
                 'error' => 'Ungültiger Value'
             ],
             'zahlung-adresse' => ['text'],
@@ -274,14 +276,18 @@ class TexBuilder{
                             'min' => '0',
                             'format' => '2',
                             'decimal' => '.',
-                            'parse' => 'money',
+                            'parse' => [
+                                    'append' => ' EUR'
+                            ],
                             'error' => 'Ungültige Einnahme'
                         ],
                         'ausgaben' => ['float',
                             'min' => '0',
                             'format' => '2',
                             'decimal' => '.',
-                            'parse' => 'money',
+                            'parse' => [
+                                    'append' => ' EUR'
+                            ],
                             'error' => 'Ungültige Ausgabe'
                         ],
                     ]
