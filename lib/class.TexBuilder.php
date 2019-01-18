@@ -294,6 +294,148 @@ class TexBuilder{
                 ]
             ]
         ],
+        'protocolmemberlist' => [
+            'date' => ['date',
+                'format' => 'Y-m-d',
+                'parse' => 'd.m.Y',
+                'error' => 'Kein Datum angegeben',
+            ],
+			'leitung' => ['regex',
+				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+				'maxlength' => 255,
+				'minlength' => 2,
+				'empty',
+				'error' => 'Ungültige Sitzungsleitung.'
+			],
+			'protocol' => ['regex',
+				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+				'maxlength' => 255,
+				'minlength' => 2,
+				'empty',
+				'error' => 'Ungültige Protokollleitung.'
+			],
+			'nth' => ['integer',
+				'min' => 1,
+				'empty',
+				'error' => 'Ungültiger NTH Eintrag.'
+			],
+			'legislatur' => ['integer',
+				'min' => 1,
+				'error' => 'Ungültige Legislatur.'
+			],
+            'member_elected' => [ 'array',
+                'empty',
+                'error' => 'Missing key member_elected',
+				'validator' => [ 'arraymap',
+					'required' => true,
+					'map' => [
+						'name' => [ 'regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => 255,
+							'minlength' => 2,
+							'error' => 'Ungültiger Name.'
+						],
+						'job' => [ 'regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => 255,
+							'minlength' => 2,
+                            'empty',
+							'error' => 'Ungültiger Job.'
+						],
+						'text' => [ 'regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => '255',
+							'empty',
+							'error' => 'Ungültiger text.'
+						],
+                    ]
+                ],
+            ],
+            'member_active' => [ 'array',
+				'empty',
+				'error' => 'Missing key member_active',
+				'validator' => [ 'arraymap',
+					'required' => true,
+					'map' => [
+						'name' => [ 'regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => 255,
+							'minlength' => 2,
+							'error' => 'Ungültiger Name.'
+						],
+						'job' => [ 'regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => 255,
+							'minlength' => 2,
+							'empty',
+							'error' => 'Ungültiger Job.'
+						],
+						'text' => [ 'regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => '255',
+							'empty',
+							'error' => 'Ungültiger text.'
+						],
+					]
+				],
+            ],
+            'member_ref' => [ 'array',
+				'empty',
+				'error' => 'Missing key member_ref',
+				'validator' => [ 'arraymap',
+					'required' => true,
+					'map' => [
+						'name' => [ 'regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => 255,
+							'minlength' => 2,
+							'error' => 'Ungültiger Name.'
+						],
+						'job' => [ 'regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => 255,
+							'minlength' => 2,
+							'empty',
+							'error' => 'Ungültiger Job.'
+						],
+						'text' => [ 'regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => '255',
+							'empty',
+							'error' => 'Ungültiger text.'
+						],
+					]
+				],
+            ],
+            'member_stuff' => [ 'array',
+				'empty',
+				'error' => 'Missing key member_stuff',
+				'validator' => [ 'arraymap',
+					'required' => true,
+					'map' => [
+						'name' => ['regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => 255,
+							'minlength' => 2,
+							'error' => 'Ungültiger Name.'
+						],
+						'job' => ['regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => 255,
+							'minlength' => 2,
+							'empty',
+							'error' => 'Ungültiger Job.'
+						],
+						'text' => ['regex',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => '255',
+							'empty',
+							'error' => 'Ungültiger text.'
+						],
+					]
+				],
+            ],
+        ],
     ];
 
     /**
@@ -472,6 +614,7 @@ class TexBuilder{
     private static function _renderTex($key, $param){
         $file = SYSBASE . '/template/tex/' . $key . '.phpTex';
         $tex = '';
+
         if (file_exists($file)){
             ob_start();
             include $file;

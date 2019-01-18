@@ -1,0 +1,290 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{longtable}
+\usepackage{ngerman}
+\usepackage[tx]{sfmath}
+\usepackage{calc}
+\usepackage{lastpage}
+\usepackage{ifthen}
+\usepackage{xifthen}
+\renewcommand\familydefault{\sfdefault}
+\usepackage{tgheros}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+\usepackage{geometry}
+\geometry{total={210mm,297mm},
+left=25mm,right=25mm,%
+bindingoffset=0mm, top=20mm,bottom=20mm}
+
+% pdf version to min 1.6
+\pdfminorversion=6
+
+<?php $date = date_create_from_format('d.m.Y', $param['date']); ?>
+
+\newcommand{\footerstring}{StuRa - Attendance}
+\linespread{1.3}
+
+\newcommand{\linia}{\rule{\linewidth}{0.5pt}}
+
+\newcommand{\mysection}[1]{
+\begin{center}
+{\large \textsc{#1}}
+\vspace*{-0.5cm}
+\\\linia\\
+\vspace*{-0.5cm}
+\end{center}
+}
+
+% custom theorems if needed
+\newtheoremstyle{mytheor}
+{1ex}{1ex}{\normalfont}{0pt}{\scshape}{.}{1ex}
+{{\thmname{#1 }}{\thmnumber{#2}}{\thmnote{ (#3)}}}
+
+\theoremstyle{mytheor}
+\newtheorem{defi}{Definition}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace*{-0.5cm}
+{\huge \textsc{\@title}}
+\linia
+\end{center}
+}
+\makeatother
+%%%
+
+% custom footers and headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{\maketitle}
+\rhead{}
+\lfoot{\footerstring}
+\cfoot{}
+\rfoot{Seite \thepage{} von \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%
+% all section titles centered and bolded
+\usepackage{sectsty}
+\allsectionsfont{\centering\bfseries\large}
+%
+% add section label
+\renewcommand\thesection{}
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\mytablehead}[1]{
+\bgroup
+%\def\arraystretch{0.8}
+\setlength\tabcolsep{1mm}
+\definecolor{Gray}{gray}{0.25}
+\begin{table}[!htbp]
+\centering
+%\caption{Add caption}
+\begin{tabular}{|m{2em}|p{17em}|p{10em}|p{10em}|}
+\toprule
+\rowcolor{Gray}
+\multicolumn{4}{c}{\textcolor{white}{\textbf{#1}}}  \\ \toprule
+\multicolumn{1}{|c|}{\textbf{\#}} & \multicolumn{1}{c|}{\textbf{Name}} & \multicolumn{1}{c|}{\textbf{Gremium}} & \multicolumn{1}{c|}{\textbf{Unterschrift}} \\
+\midrule
+
+}
+%----------------------------------------------------------
+\newcommand{\myguesttablehead}[1]{
+\bgroup
+%\def\arraystretch{0.8}
+\setlength\tabcolsep{1mm}
+\definecolor{Gray}{gray}{0.25}
+\begin{table}[!htbp]
+\centering
+%\caption{Add caption}
+\begin{tabular}{|m{2em}|p{17em}|p{20.48em}|}
+\toprule
+\rowcolor{Gray}
+\multicolumn{3}{c}{\textcolor{white}{\textbf{#1}}}  \\ \toprule
+\multicolumn{1}{|c|}{\textbf{\#}} & \multicolumn{1}{c|}{\textbf{Name}} & \multicolumn{1}{c|}{\textbf{Gremium$\vert$Verein$\vert$Organisation$\vert$...}} \\
+\midrule
+
+}
+%----------------------------------------------------------
+\newcommand{\mytablefoot}{
+\bottomrule
+\end{tabular}
+%\label{tab:addlabel}%
+\end{table}%
+\egroup
+}
+%----------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%----------%%%----------%%%----------%%%----------%%%
+\author{StuRa der TU Ilmenau}
+
+\begin{document}
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  Page Header
+%% - - - - - - - - - - - - - - - - - - -
+\title{~\\\vspace*{3mm}\hspace*{-14.0cm}\includegraphics[width=2cm]{<?= self::texEscape(SYSBASE.'/template/img/stura2.pdf') ?>} \\\vspace*{-14mm} Anwesenheitsliste
+\\\normalsize
+\textbf{Datum:} <?= $date->format('d.m.y')?>
+%\hspace{7mm}-\hspace{7mm}\textbf{Legislatur:} <?= (self::texEscape($param['legislatur']))? self::texEscape($param['legislatur']) : '____' ?>
+%\hspace{7mm}-\hspace{7mm}\textbf{Sitzung:} <?= (self::texEscape($param['nth']))? self::texEscape($param['nth']) : '____' ?>
+
+}
+~\\\vspace*{-13mm}\\
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  Leitung + Protokollkontrolle
+%% - - - - - - - - - - - - - - - - - - -
+\begin{figure}[!htbp]
+\begin{tabularx}{\textwidth}{|X|X|}
+\hline
+\scriptsize{\textbf{Sitzungsleitung}} & \scriptsize{\textbf{Protokollkontrolle}} \\
+\multicolumn{1}{|c|}{<?= ($param['leitung'])? self::texEscape($param['leitung']) : '' ?>}     & \multicolumn{1}{c|}{<?= ($param['protocol'])? self::texEscape($param['protocol']) : '' ?>} \\ \hline
+\end{tabularx}
+\end{figure}
+\\\vspace*{-17mm}\\
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  Data: Sturaete, Angestellte, Referatsleitung, Aktiv
+%% - - - - - - - - - - - - - - - - - - -
+<?php
+
+$members = [];
+foreach ($param['member_elected'] as $m){
+	$m['head'] = 'Sturäte - Gewählt';
+	$members[] = $m;
+}
+foreach ($param['member_stuff'] as $m){
+	$m['head'] = 'Angestellte';
+	$members[] = $m;
+}
+foreach ($param['member_ref'] as $m){
+	$m['head'] = 'Referatsleitung';
+	$members[] = $m;
+}
+foreach ($param['member_active'] as $m){
+	$m['head'] = 'Aktiv';
+	$members[] = $m;
+}
+
+?>
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  Table: Sturaete, Angestellte, Referatsleitung, Aktiv
+%% - - - - - - - - - - - - - - - - - - -
+<?php
+
+$global_counter = 0;
+$page_line_counter = 24;
+$page_max_lines_first_page = 25;
+$page_max_lines_default = 27;
+$page_max_lines = $page_max_lines_first_page;
+$table_open = false;
+$skipfirst_head = false;
+$line_open = false;
+$last_head = '';
+
+foreach($members as $m){
+    $global_counter++;
+	$page_line_counter = ($page_line_counter + 1)%$page_max_lines;
+
+	if ($page_line_counter == 0 || $last_head != $m['head']){
+		if ($global_counter != 1) $page_max_lines = $page_max_lines_default;
+	    if ($table_open){
+	        echo "\n\\mytablefoot\n";
+			$table_open = false;
+			$line_open = false;
+        }
+		$table_open = true;
+		//new page
+		if ($page_line_counter == 0 && ($global_counter != 1 || $skipfirst_head == true)){
+			echo "\\newpage~\\vspace*{-3mm}\\\\";
+        } else {
+			$skipfirst_head = true;
+        }
+	    //table header
+	    echo "\n\\mytablehead{".self::texEscape($m['head'])."}"; $page_line_counter++; $page_line_counter++;
+		$last_head = $m['head'];
+    }
+	if ($line_open) {
+	    echo " \\midrule";
+    }
+    echo "\n $global_counter & ".self::texEscape($m['name'])." & \\tiny{".self::texEscape($m['job'])."} & ".self::texEscape($m['text'])."\\\\ ";
+	$line_open = true;
+}
+if ($table_open){
+	echo "\n\\mytablefoot\n";
+	$table_open = false;
+}
+$line_open = false;
+
+?>
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  Table: Gäste
+%% - - - - - - - - - - - - - - - - - - -
+<?php
+
+$min_guests = 10;
+$guest_count = 0;
+
+while(true) {
+	$global_counter++;
+	$page_line_counter = ($page_line_counter + 1)%$page_max_lines;
+
+	$guest_count++;
+	if ($guest_count > $min_guests && $page_line_counter == 0) break;
+
+	if ($page_line_counter == 0 || $guest_count == 1){
+
+		if ($global_counter != 1) $page_max_lines = $page_max_lines_default;
+		if ($table_open){
+			echo "\n\\mytablefoot\n";
+			$table_open = false;
+			$line_open = false;
+		}
+		$table_open = true;
+		//new page
+		if ($page_line_counter == 0 && ($global_counter != 1 || $skipfirst_head == true)){
+			echo "\\newpage~\\vspace*{-3mm}\\\\";
+		} else {
+			$skipfirst_head = true;
+		}
+		//table header
+		echo "\n\\myguesttablehead{".self::texEscape('Gäste')."}"; $page_line_counter++; $page_line_counter++;
+	}
+
+	if ($line_open) {
+		echo " \\midrule";
+	}
+	echo "\n $guest_count &  & \\\\ ";
+	$line_open = true;
+}
+if ($table_open){
+	echo "\n\\mytablefoot\n";
+	$table_open = false;
+}
+$line_open = false;
+
+?>
+\end{document}
