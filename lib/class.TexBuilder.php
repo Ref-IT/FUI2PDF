@@ -245,6 +245,7 @@ class TexBuilder{
                 'error' => 'Ungültiger Empfänger Name.'
             ],
             'zahlung-iban' => ['iban',
+				'empty',
             ],
             'zahlung-value' => ['float',
                 'format' => '2',
