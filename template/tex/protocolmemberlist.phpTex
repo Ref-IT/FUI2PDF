@@ -91,7 +91,7 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\mytablehead}[1]{
 \bgroup
-%\def\arraystretch{0.8}
+\def\arraystretch{1.2}
 \setlength\tabcolsep{1mm}
 \definecolor{Gray}{gray}{0.25}
 \begin{table}[!htbp]
@@ -100,15 +100,14 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \begin{tabular}{|m{2em}|p{17em}|p{10em}|p{10em}|}
 \toprule
 \rowcolor{Gray}
-\multicolumn{4}{c}{\textcolor{white}{\textbf{#1}}}  \\ \toprule
+\multicolumn{4}{c}{\textcolor{white}{\textbf{#1}}}  \\ \specialrule{.4pt}{0pt}{0pt}
 \multicolumn{1}{|c|}{\textbf{\#}} & \multicolumn{1}{c|}{\textbf{Name}} & \multicolumn{1}{c|}{\textbf{Gremium}} & \multicolumn{1}{c|}{\textbf{Unterschrift}} \\
-\midrule
-
+\specialrule{.4pt}{0pt}{0pt}
 }
 %----------------------------------------------------------
 \newcommand{\myguesttablehead}[1]{
 \bgroup
-%\def\arraystretch{0.8}
+\def\arraystretch{1.2}
 \setlength\tabcolsep{1mm}
 \definecolor{Gray}{gray}{0.25}
 \begin{table}[!htbp]
@@ -117,14 +116,14 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \begin{tabular}{|m{2em}|p{17em}|p{20.48em}|}
 \toprule
 \rowcolor{Gray}
-\multicolumn{3}{c}{\textcolor{white}{\textbf{#1}}}  \\ \toprule
+\multicolumn{3}{c}{\textcolor{white}{\textbf{#1}}}  \\ \specialrule{.4pt}{0pt}{0pt}
 \multicolumn{1}{|c|}{\textbf{\#}} & \multicolumn{1}{c|}{\textbf{Name}} & \multicolumn{1}{c|}{\textbf{Gremium$\vert$Verein$\vert$Organisation$\vert$...}} \\
-\midrule
+\specialrule{.4pt}{0pt}{0pt}
 
 }
 %----------------------------------------------------------
 \newcommand{\mytablefoot}{
-\bottomrule
+\specialrule{.8pt}{0pt}{4pt}
 \end{tabular}
 %\label{tab:addlabel}%
 \end{table}%
@@ -231,9 +230,9 @@ foreach($members as $m){
 		$last_head = $m['head'];
     }
 	if ($line_open) {
-	    echo " \\midrule";
+	    echo " \\specialrule{.4pt}{0pt}{0pt}";
     }
-    echo "\n $global_counter & ".self::texEscape($m['name'])." & \\tiny{".self::texEscape($m['job'])."} & ".(($m['text'])?'\multicolumn{1}{c|}{'.self::texEscape($m['text']).'}':'')."\\\\ ";
+    echo "\n $global_counter & ".self::texEscape($m['name'])." & \\tiny{".self::texEscape($m['job'])."} & ".(($m['text'])?'\multicolumn{1}{p{10em}|}{\centering '.self::texEscape($m['text']).'}':'')."\\\\ ";
 	$line_open = true;
 }
 if ($table_open){
@@ -279,7 +278,7 @@ while(true) {
 	}
 
 	if ($line_open) {
-		echo " \\midrule";
+		echo " \\specialrule{.4pt}{0pt}{0pt}";
 	}
 	echo "\n $guest_count &  & \\\\ ";
 	$line_open = true;
