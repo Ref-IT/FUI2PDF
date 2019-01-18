@@ -170,18 +170,22 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 <?php
 
 $members = [];
+if (!isset($param['member_elected']) || !is_array($param['member_elected'])) $param['member_elected'] = [];
 foreach ($param['member_elected'] as $m){
 	$m['head'] = 'Sturäte - Gewählt';
 	$members[] = $m;
 }
+if (!isset($param['member_stuff']) || !is_array($param['member_stuff'])) $param['member_stuff'] = [];
 foreach ($param['member_stuff'] as $m){
 	$m['head'] = 'Angestellte';
 	$members[] = $m;
 }
+if (!isset($param['member_ref']) || !is_array($param['member_ref'])) $param['member_ref'] = [];
 foreach ($param['member_ref'] as $m){
 	$m['head'] = 'Referatsleitung';
 	$members[] = $m;
 }
+if (!isset($param['member_active']) || !is_array($param['member_active'])) $param['member_active'] = [];
 foreach ($param['member_active'] as $m){
 	$m['head'] = 'Aktiv';
 	$members[] = $m;
@@ -195,9 +199,9 @@ foreach ($param['member_active'] as $m){
 <?php
 
 $global_counter = 0;
-$page_line_counter = 24;
-$page_max_lines_first_page = 25;
-$page_max_lines_default = 27;
+$page_line_counter = 23;
+$page_max_lines_first_page = 24;
+$page_max_lines_default = 26;
 $page_max_lines = $page_max_lines_first_page;
 $table_open = false;
 $skipfirst_head = false;
@@ -229,7 +233,7 @@ foreach($members as $m){
 	if ($line_open) {
 	    echo " \\midrule";
     }
-    echo "\n $global_counter & ".self::texEscape($m['name'])." & \\tiny{".self::texEscape($m['job'])."} & ".self::texEscape($m['text'])."\\\\ ";
+    echo "\n $global_counter & ".self::texEscape($m['name'])." & \\tiny{".self::texEscape($m['job'])."} & ".(($m['text'])?'\multicolumn{1}{c|}{'.self::texEscape($m['text']).'}':'')."\\\\ ";
 	$line_open = true;
 }
 if ($table_open){
