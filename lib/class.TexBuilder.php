@@ -441,6 +441,61 @@ class TexBuilder{
 				],
             ],
         ],
+		'inventorylist' => [
+			'date' => ['date',
+				'format' => 'Y-m-d',
+				'parse' => 'd.m.Y',
+				'error' => 'Kein Datum angegeben',
+			],
+			'header' => [ 'array',
+				'empty',
+				'validator' => [ 'arraymap',
+					'required' => true,
+					'map' => [
+						'title' => ['regex',
+							'empty',
+							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+							'maxlength' => 255,
+							'minlength' => 0,
+							'error' => 'Ungültiger Titel.'
+						],
+						'date' => ['regex', 'optional',
+							'pattern' => '/^([0-9a-zA-Z_ :,\.\-\/])+$/',
+							'maxlength' => 255,
+							'minlength' => 1,
+							'empty',
+							'error' => 'Ungültiges Datumformat.'
+						],
+						'table_format' => ['regex', 'optional',
+							'pattern' => '/^([a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()\{\}])*$/',
+							'maxlength' => '255',
+							'empty',
+							'error' => 'Ungültiges Tabellen format.'
+						],
+						'center' => [ 'integer', 'optional',
+							'min' => 1,
+							'max' => 1,
+							'error' => 'Ungültiges flag "center"',
+						],
+					],
+				],
+				'key' => ['regex',
+					'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
+					'maxlength' => 255,
+					'minlength' => 1,
+					'error' => 'Ungültiger headerkey Eintrag.'
+				]
+			],
+			'items' => [ 'array',
+				'pre_json_decode',
+				'empty',
+				'false',
+				'error' => 'Ungültiger items Eintrag.'
+			],
+			'modifier' => ['array', 'optional',
+				'empty',
+			],
+		],
     ];
 
     /**
@@ -489,8 +544,8 @@ class TexBuilder{
      */
     public static function texEscape($in){
         return str_replace(
-            ['\\', '~', '_', '%', '$', '&', '^', '"', '{', '}'],
-            ['\textbackslash', '\textasciitilde', '\_', '\%', '\$', '\&', '^', "''", '\{', '\}'],
+            ['\\', '~', '_', '%', '$', '&', '^', '"', '{', '}', '#', '€'],
+            ['\textbackslash', '\textasciitilde', '\_', '\%', '\$', '\&', '^', "''", '\{', '\}', '\#', '\EUR'],
             $in
         );
     }
@@ -615,6 +670,7 @@ class TexBuilder{
      *
      * @param string $key
      * @param array  $param
+	 * @return string
      */
     private static function _renderTex($key, $param){
         $file = SYSBASE . '/template/tex/' . $key . '.phpTex';
@@ -691,7 +747,7 @@ class TexBuilder{
      * get pdf as base64 string
      *
      * @param bool $echo
-     * return string
+     * @return string
      */
     public function getBase64($echo = false){
         if ($this->binary_build){
@@ -706,7 +762,7 @@ class TexBuilder{
      * get binary pdf data
      *
      * @param bool $echo
-     * return binary|NULL
+     * @return binary|NULL
      */
     public function getBinary($echo = false){
         if ($this->binary_build){

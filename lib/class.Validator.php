@@ -1078,6 +1078,10 @@ class Validator {
 	 * @return boolean
 	 */
 	public function V_regex($value, $params = ['pattern' => '/.*/']) {
+		if (!is_numeric($value)&&!is_string($value)&&!is_bool($value)&&$value!=''){
+			$msg = "Invalid 'value' type";
+			return !$this->setError(true, 200, (isset($params['error']))? $params['error']: $msg, $msg);
+		}
 		$v = ''.$value;
 		if (in_array('specialchars', $params, true)){
 			$v = htmlspecialchars($v);
@@ -1309,7 +1313,7 @@ class Validator {
 			$msg = (isset($params['error']))? $params['error'] : 'time validation failed, format: "'.$fmt.'"';
 			return !$this->setError(true, 200, $msg, 'time validation failed, format: "'.$fmt.'"');
 		} else {
-			$d = DateTime::createFromFormat($fmt, $time);
+			$d = \DateTime::createFromFormat($fmt, $time);
 			if($d && $d->format($fmt) == $time){
 				$this->filtered = $d->format((isset($params['parse']))?$params['parse']:$fmt);
 				return !$this->setError(false);
@@ -1333,12 +1337,16 @@ class Validator {
 	 *  false		1	allow false -> reset to empty array
 	 *  validator	2	run this validator on each array element
 	 *  error		2	overwrite error message
+	 *  pre_json_decode 1 ron json decode on string -> workaround for limited php setting 'max_input_vars'
 	 *
 	 * @param array $a
 	 * @param array $params
 	 * @return boolean
 	 */
 	public function V_array($a, $params){
+		if (in_array('pre_json_decode', $params, true)){
+			$a = json_decode( $a, true);
+		}
 		if (!is_array($a)){
 			if ($a === '0' && in_array('false', $params, true)){
 				$a = [];
@@ -1398,14 +1406,18 @@ class Validator {
 	 * run validator on array and given map
 	 *
 	 * $param
-	 *  map 		2 validation map
-	 *  required 	2 boolean, default false
+	 *  map 			2 validation map
+	 *  required 		2 boolean, default false
+	 *  pre_json_decode 1 ron json decode on string -> workaround for limited php setting 'max_input_vars'
 	 *
 	 * @param array $a
 	 * @param array $params
 	 * @return boolean
 	 */
 	public function V_arraymap($a, $params){
+		if (in_array('pre_json_decode', $params, true)){
+			$a = json_decode( $a, true);
+		}
 		if (!isset($params['map'])){
 			return !$this->setError(true, 200, 'invalid configuration on arraymap validation', 'arraymap validator failed: wrong configuration: missing parameter map');
 		}
@@ -1438,7 +1450,7 @@ class Validator {
 			return !$this->setError(false);
 		}
 		$fmt = (isset($params['format']))? $params['format'] : 'Y-m-d';
-		$d = DateTime::createFromFormat($fmt, $date);
+		$d = \DateTime::createFromFormat($fmt, $date);
 		if($d && $d->format($fmt) == $date){
 			$this->filtered = $d->format((isset($params['parse']))?$params['parse']:$fmt);
 		} else {

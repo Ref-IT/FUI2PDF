@@ -1,0 +1,317 @@
+\documentclass[a4paper,11pt,twoside]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{longtable}
+\usepackage{ngerman}
+\usepackage[tx]{sfmath}
+\usepackage{calc}
+\usepackage{lastpage}
+\usepackage{ifthen}
+\usepackage{xifthen}
+\renewcommand\familydefault{\sfdefault}
+\usepackage{tgheros}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{ marvosym }
+
+\usepackage[total={210mm,297mm},inner=20mm,outer=10mm,bindingoffset=0mm,top=20mm,bottom=20mm]{geometry}
+%\usepackage{geometry}
+%\geometry{total={210mm,297mm},
+%left=20mm,right=20mm,%
+%bindingoffset=0mm, top=20mm,bottom=20mm}
+
+% pdf version to min 1.6
+\pdfminorversion=6
+
+<?php $date = date_create_from_format('d.m.Y', $param['date']); ?>
+
+\newcommand{\footerstring}{StuRa - Inventar}
+\linespread{1.3}
+
+\newcommand{\linia}{\rule{\linewidth}{0.5pt}}
+
+\newcommand{\mysection}[1]{
+\begin{center}
+{\large \textsc{#1}}
+\vspace*{-0.5cm}
+\\\linia\\
+\vspace*{-0.5cm}
+\end{center}
+}
+
+% custom theorems if needed
+\newtheoremstyle{mytheor}
+{1ex}{1ex}{\normalfont}{0pt}{\scshape}{.}{1ex}
+{{\thmname{#1 }}{\thmnumber{#2}}{\thmnote{ (#3)}}}
+
+\theoremstyle{mytheor}
+\newtheorem{defi}{Definition}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace*{-0.5cm}
+{\huge \textsc{\@title}}
+\linia
+\end{center}
+}
+\makeatother
+%%%
+
+% custom footers and headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{\maketitle}
+\rhead{}
+\lfoot{\footerstring}
+\cfoot{}
+\rfoot{Seite \thepage{} von \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%
+% all section titles centered and bolded
+\usepackage{sectsty}
+\allsectionsfont{\centering\bfseries\large}
+%
+% add section label
+\renewcommand\thesection{}
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------
+\newcommand{\specialcell}[2][c]{%
+\begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%----------%%%----------%%%----------%%%----------%%%
+\author{StuRa der TU Ilmenau}
+\renewcommand{\baselinestretch}{1.0}
+\begin{document}
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  Page Header
+%% - - - - - - - - - - - - - - - - - - -
+\title{~\\\vspace*{3mm}\hspace*{-14.0cm}\includegraphics[width=2cm]{<?= self::texEscape(SYSBASE.'/template/img/stura2.pdf') ?>} \\\vspace*{-14mm} Inventar
+\\\normalsize
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  MODIFIER
+%% - - - - - - - - - - - - - - - - - - -
+\textbf{Stand:} <?= $date->format('d.m.Y')?>
+<?php
+	if(isset($param['modifier'])&&$param['modifier']) {
+		if (isset($param['modifier']['min_value'])) {
+			$param['modifier']['wert_ab'] = $param['modifier']['min_value'];
+			unset($param['modifier']['min_value']);
+		}
+		if (isset($param['modifier']['only_out'])) {
+			unset($param['modifier']['only_out']);
+			$param['modifier']['nur_abgang'] = '';
+		}
+		if (isset($param['modifier']['hide_out'])) {
+			unset($param['modifier']['hide_out']);
+			$param['modifier']['non_abgang'] = '';
+		}
+		if (isset($param['modifier']['hide_verbrauch'])) {
+			unset($param['modifier']['hide_verbrauch']);
+			$param['modifier']['non_verbrauch'] = '';
+		}
+		if (isset($param['modifier']['only_verleihbar'])) {
+			unset($param['modifier']['only_verleihbar']);
+			$param['modifier']['verleihbar'] = '';
+		}
+
+		if (isset($param['modifier']) && $param['modifier']) {
+			foreach ($param['modifier'] as $k => $v) {
+				echo PHP_EOL . '\hspace{7mm}-\hspace{7mm}\textbf{' . self::texEscape($k) . (($v)?':} '. self::texEscape($v):'}');
+			}
+		}
+	}
+?>
+
+}
+~\\\vspace*{-11mm}\\
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  TABLE Header
+%% - - - - - - - - - - - - - - - - - - -
+\definecolor{Gray}{gray}{0.25}
+\bgroup
+\def\baselinestretch{1.0}
+\def\arraystretch{1.4}
+\setlength\tabcolsep{1mm}
+\begin{longtable}[!htbp]{<?php
+	foreach($param['header'] as $k => $head){
+		$tf = '';
+		if (isset($head['table_format']) && $head['table_format']){
+			$tf = $head['table_format'];
+		} else {
+			$tf = 'l';
+		}
+		echo $tf;
+		$param['header'][$k]['table_format'] = $tf;
+	}
+?>}
+\toprule
+\rowcolor{Gray}
+<?php
+	$count = 0;
+	echo PHP_EOL;
+	foreach ($param['header'] as $k => $head) {
+		if ($count) echo ' & ';
+		echo ((isset($head['center']))?'\multicolumn{1}{'.$head['table_format'].'}{\centering ':'');
+		echo '{\fontsize{10pt}{10pt}\selectfont ';
+		echo '\textcolor{white}{\textbf{'.str_replace('\textbackslashn', '\\newline ', TexBuilder::texEscape($head['title'])).'}}';
+		echo '}';
+		echo ((isset($head['center']))?'}':'');
+		$count++;
+	}
+	echo ' \\\\ \toprule';
+?>
+\hline
+\endfirsthead
+\\
+\toprule
+\rowcolor{Gray}
+<?php
+$count = 0;
+echo PHP_EOL;
+foreach ($param['header'] as $k => $head) {
+	if ($count) echo ' & ';
+	echo ((isset($head['center']))?'\multicolumn{1}{'.$head['table_format'].'}{\centering ':'');
+	echo '{\fontsize{10pt}{10pt}\selectfont ';
+	echo '\textcolor{white}{\textbf{'.str_replace('\textbackslashn', '\\newline ', TexBuilder::texEscape($head['title'])).'}}';
+	echo '}';
+	echo ((isset($head['center']))?'}':'');
+	$count++;
+}
+echo ' \\\\ \toprule';
+?>
+\hline
+\endhead
+\endfoot
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  TABLE footer
+%% - - - - - - - - - - - - - - - - - - -
+<?php
+	if (isset($param['modifier']) && !empty($param['modifier']) && is_array($param['modifier'])){
+		echo PHP_EOL.'\multicolumn{'.count($param['header']).'}{c}{\centering{\fontsize{10pt}{10pt}\selectfont LEGENDE }} \\\\';
+		echo PHP_EOL.'\multicolumn{'.count($param['header']).'}{c}{\centering{\fontsize{7pt}{7pt}\selectfont ';
+		echo '\specialcell{';
+
+		$foot_count = 0;
+		foreach ($param['modifier'] as $m => $i) {
+			$foot_count++;
+			echo PHP_EOL;
+			//echo PHP_EOL.'\multicolumn{'.count($param['header']).'}{c}{\centering{\fontsize{7pt}{7pt}\selectfont ';
+			switch ($m) {
+				case 'non_abgang': {
+					echo '\qquad\textbf{'.TexBuilder::texEscape($m).'} - Es werden keine deinventarisierten Posten angezeigt.\qquad';
+					break;
+				}
+				case 'nur_abgang': {
+					echo '\qquad\textbf{'.TexBuilder::texEscape($m).'} - Es werden nur deinventarisierte Posten angezeigt.\qquad';
+					break;
+				}
+				case 'state': {
+					echo '\qquad\textbf{'.TexBuilder::texEscape($m).'} - Beschränke Liste auf Posten mit diesem Status.\qquad';
+					break;
+				}
+				case 'category': {
+					echo '\qquad\textbf{'.TexBuilder::texEscape($m).'} - Beschränke Liste auf Posten in dieser Kategorie.\qquad';
+					break;
+				}
+				case 'place': {
+					echo '\qquad\textbf{'.TexBuilder::texEscape($m).'} - Beschränke Liste auf Posten an diesem Ort.\qquad\qquad\qquad';
+					break;
+				}
+				case 'wert_ab': {
+					echo '\qquad\textbf{'.TexBuilder::texEscape($m).'} - Zeige nur Einträge ab einem Wert von X.\qquad\qquad';
+					break;
+				}
+				case 'non_verbrauch': {
+					echo '\qquad\textbf{'.TexBuilder::texEscape($m).'} - Zeige keine eingetragenen Verbrauchsmaterialien.\qquad';
+					break;
+				}
+				case 'verleihbar': {
+					echo '\qquad\textbf{'.TexBuilder::texEscape($m).'} - Zeige nur Verleihbare Artikel.\qquad';
+					break;
+				}
+				default:
+					echo '\qquad\textbf{'.TexBuilder::texEscape($m).'}';
+					break;
+			}
+			if ($foot_count%2 == 0){
+				echo '\\\\';
+			}
+		}
+		?>
+
+		<?php
+		echo '}}} \\\\';
+	}
+?>
+\endlastfoot
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  Contend
+%% - - - - - - - - - - - - - - - - - - -
+<?php
+echo PHP_EOL;
+	foreach ($param['items'] as $pos => $item) {
+		$count = 0;
+		echo PHP_EOL;
+		foreach ($param['header'] as $k => $head) {
+			if ($count) echo ' & ';
+			if (isset($item[$k]) && $item[$k] && !($k=='v' && $item[$k]=='0.00')){
+				$val = $item[$k];
+				if (isset($head['date'])){
+					$val = date_create($val)->format($head['date']);
+				}
+				echo PHP_EOL;
+				echo ((isset($head['center']))?'\multicolumn{1}{'.$head['table_format'].'}{\centering ':'');
+				echo '{\fontsize{10pt}{10pt}\selectfont ';
+				if ($k=='v') {
+					echo ($item['ans'])?'ca. ':'';
+				}
+				echo TexBuilder::texEscape($val);
+				if ($k=='v') {
+					echo ($item['dm'])?' DM':TexBuilder::texEscape(' €');
+				}
+				if ($k=='c' && isset($item['cc'])) {
+					echo '/'.TexBuilder::texEscape($item['cc']);
+				}
+				echo '}';
+				echo ((isset($head['center']))?'}':'');
+
+			}
+			$count++;
+		}
+		echo ' \\\\ \hline';
+	}
+?>
+\end{longtable}
+\egroup
+
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  DOCUMENT END
+%% - - - - - - - - - - - - - - - - - - -
+
+\end{document}
