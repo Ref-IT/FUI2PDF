@@ -695,8 +695,28 @@ class TexBuilder{
                     $files[str_pad($b['id'], 3, "0", STR_PAD_LEFT) . '-B' . $b['short']] = $f . '.pdf';
                 }
             }
+			$validated = $this->validator->getFiltered();
+			if (isset($validated['filedata'])){
+				foreach ($validated['filedata'] as $k => $fs){
+					if (($f = tempnam(sys_get_temp_dir(), 'tex-tmp-')) === false){
+						$this->error = "Failed to create temporary file";
+						foreach ($files as $v){
+							if (!DEBUG_DO_NOT_DELETE__TEX_PDF && file_exists($v))
+								unlink($v);
+						}
+						return false;
+					}
+					//remove empty file again
+					if (file_exists($f)) unlink($f);
+					//set file with actual content
+					$f.=(isset($fs['type']) && $fs['type'])? '.'.$fs['type'] : '.png';
+					file_put_contents($f , base64_decode($fs['data']));
+					$files[$k] = $f;
+					$validated['filedata'][$k]['file'] = $f;
+					unset($validated['filedata'][$k]['data']);
+				}
+			}
 
-            $validated = $this->validator->getFiltered();
             $validated['files'] = $files;
             //get tex code
             $tex = self::_renderTex($this->last_key, $validated);
