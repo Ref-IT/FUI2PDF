@@ -1,0 +1,258 @@
+\documentclass[a4paper,11pt,twoside]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{longtable}
+\usepackage{ngerman}
+\usepackage[tx]{sfmath}
+\usepackage{calc}
+\usepackage{lastpage}
+\usepackage{ifthen}
+\usepackage{xifthen}
+\renewcommand\familydefault{\sfdefault}
+\usepackage{tgheros}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{ marvosym }
+
+\usepackage[total={210mm,297mm},inner=20mm,outer=10mm,bindingoffset=0mm,top=20mm,bottom=20mm]{geometry}
+%\usepackage{geometry}
+%\geometry{total={210mm,297mm},
+%left=20mm,right=20mm,%
+%bindingoffset=0mm, top=20mm,bottom=20mm}
+
+% pdf version to min 1.6
+\pdfminorversion=6
+
+<?php $date = date_create_from_format('d.m.Y', $param['date']); ?>
+
+\newcommand{\footerstring}{StuRa - Inventar}
+\linespread{1.3}
+
+\newcommand{\linia}{\rule{\linewidth}{0.5pt}}
+
+\newcommand{\mysection}[1]{
+\begin{center}
+{\large \textsc{#1}}
+\vspace*{-0.5cm}
+\\\linia\\
+\vspace*{-0.5cm}
+\end{center}
+}
+
+% custom theorems if needed
+\newtheoremstyle{mytheor}
+{1ex}{1ex}{\normalfont}{0pt}{\scshape}{.}{1ex}
+{{\thmname{#1 }}{\thmnumber{#2}}{\thmnote{ (#3)}}}
+
+\theoremstyle{mytheor}
+\newtheorem{defi}{Definition}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace*{-0.5cm}
+{\huge \textsc{\@title}}
+\linia
+\end{center}
+}
+\makeatother
+%%%
+
+% custom footers and headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{\maketitle}
+\rhead{}
+\lfoot{\footerstring}
+\cfoot{}
+\rfoot{Seite \thepage{} von \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%
+% all section titles centered and bolded
+\usepackage{sectsty}
+\allsectionsfont{\centering\bfseries\large}
+%
+% add section label
+\renewcommand\thesection{}
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------
+\newcommand{\specialcell}[2][c]{%
+\begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+\newcommand{\specialleftcell}[2][l]{%
+\begin{tabular}[#1]{@{}l@{}}#2\end{tabular}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%----------%%%----------%%%----------%%%----------%%%
+\author{StuRa der TU Ilmenau}
+\renewcommand{\baselinestretch}{1.0}
+\begin{document}
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  Page Header
+%% - - - - - - - - - - - - - - - - - - -
+\title{~\\\vspace*{3mm}\hspace*{-14.0cm}\includegraphics[width=2cm]{<?= TexBuilder::texEscape(SYSBASE.'/template/img/stura2.pdf') ?>} \\\vspace*{-14mm} Inventar - Details
+\\\normalsize
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  MODIFIER
+%% - - - - - - - - - - - - - - - - - - -
+\textbf{Gedruckt:} <?= $date->format('d.m.Y')?>
+}
+~\\\vspace*{-11mm}\\
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  TABLE Header
+%% - - - - - - - - - - - - - - - - - - -
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%  ITEM
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bgroup
+\def\arraystretch{1.5}
+\setlength\tabcolsep{1mm}
+\definecolor{Gray}{gray}{0.25}
+\begin{table}[!htbp]
+\centering
+%\caption{Add caption}
+\begin{tabular}{p{9.7em}p{12.7em}p{7.2em}p{15.0em}}
+\toprule
+\rowcolor{Gray}
+\multicolumn{4}{c}{\textcolor{white}{\textbf{<?= TexBuilder::texEscape($param['data']['name']) ?>}}}  \\ \specialrule{.4pt}{0pt}{0pt}
+
+\multicolumn{4}{p{17em}}{
+
+\vspace{-1mm}\hspace*{1cm}\begin{minipage}[m][6cm][c]{10cm}
+<?php
+	if(isset($param['filedata']) && count($param['filedata']) > 0) {
+		echo '\includegraphics[width=6cm,height=5cm,keepaspectratio]{'.explode('/', $param['filedata'][0]['file'])[2].'}';
+	}
+?>
+\end{minipage}
+
+
+
+}  \\ \specialrule{.4pt}{0pt}{0pt}
+
+{\textbf{		ID 			}} & <?= TexBuilder::texEscape($param['data']['id']); ?> &
+{\textbf{		Status 		}} & <?= TexBuilder::texEscape($param['data']['uname']); ?> \\ \specialrule{.4pt}{0pt}{0pt}
+
+{\textbf{		Clone	 	}} & <?= ((isset($param['data']['clone_id']) && $param['data']['clone_id'])? $param['data']['clone_id'] : '-'); ?>  & &\\ \specialrule{.4pt}{0pt}{0pt}
+
+{\textbf{		Verbrauchsmaterial	 	}} & <?= (($param['data']['verb'])? 'Ja' : 'Nein'); ?>  & &\\ \specialrule{.4pt}{0pt}{0pt}
+
+{\textbf{		Verleihbar	 	}} & <?= (($param['data']['a'])? 'Ja' : 'Nein'); ?>  & &\\ \specialrule{.4pt}{0pt}{0pt}
+
+{\textbf{		Standort 	}} & <?= TexBuilder::texEscape($param['data']['pname']); ?> &
+{\textbf{		Kategorie 	}} & <?= TexBuilder::texEscape($param['data']['cname']); ?> \\ \specialrule{.4pt}{0pt}{0pt}
+
+{\textbf{		Wert 	}} & <?php if ($param['data']['v'] != '0.00' && $param['data']['v'] != 0) { echo (($param['data']['ans'])? 'ca. ' : '').TexBuilder::texEscape($param['data']['v']). ((!$param['data']['dm'])? TexBuilder::texEscape(' €') : ' DM');} ?> &
+{\textbf{		Anschaffung	 	}} & <?= (($param['data']['ans'])? 'ca. ' : '') . date_create($param['data']['inda'])->format((($param['data']['ans'])? 'm.Y' : 'd.m.Y')); ?> \\ \specialrule{.4pt}{0pt}{0pt}
+
+<?php if (isset($param['data']['out_date']) && $param['data']['out_date']) { ?>
+
+	{\textbf{		Ausgetragen 	}} & <?= date_create($param['data']['out_date'])->format('d.m.Y'); ?> &
+	{\textbf{		Von 	}} & <?= TexBuilder::texEscape($param['data']['out_who']); ?> \\ \specialrule{.4pt}{0pt}{0pt}
+
+<?php } ?>
+
+{\textbf{		Menge Kauf 	}} & <?= TexBuilder::texEscape( isset($param['data']['c']) && ($param['data']['c'])? $param['data']['c'] :'-'); ?> &
+{\textbf{		Menge Aktuell 	}} & <?= TexBuilder::texEscape(isset($param['data']['c']) && ($param['data']['cc'])? $param['data']['cc'] : '-'); ?> \\ \specialrule{.4pt}{0pt}{0pt}
+
+{\textbf{		(Letzte Inventur) 	}} & <?= date_create($param['data']['last_checked'])->format('d.m.Y'); ?> &
+{\textbf{		(Erstellt) 	}} & <?= date_create($param['data']['created'])->format('d.m.Y'); ?> \\ \specialrule{.4pt}{0pt}{0pt}
+
+{\textbf{		Tags 		}} & \multicolumn{3}{l}{<?= TexBuilder::texEscape($param['data']['tags']); ?>} \\ \specialrule{.4pt}{0pt}{0pt}
+
+{\textbf{		Beschreibung 		}} & \multicolumn{3}{l}{\small \def\arraystretch{1.1} {\hspace{-1.8mm} \specialleftcell{
+	<?php
+		$split = preg_split("/[\n]/", $param['data']['pdesc']);
+		foreach ($split as $k => $s) {
+			echo TexBuilder::texEscape($s);
+			if ($k < (count($split) - 1)) echo ' \\\\';
+		}
+	?>}}} \\ \specialrule{.4pt}{0pt}{0pt}
+{\textbf{		Bemerkung}} & \multicolumn{3}{l}{\small \def\arraystretch{1.1} {\hspace{-1.8mm} \specialleftcell{
+	<?php
+		$split = preg_split("/[\n]/", $param['data']['be']);
+		foreach ($split as $k => $s) {
+			echo TexBuilder::texEscape($s);
+			if ($k < (count($split) - 1)) echo ' \\\\';
+		}
+	 ?>}}} \\ \specialrule{.4pt}{0pt}{0pt}
+
+
+
+<?php /*
+{\textbf{ID}} & <?= TexBuilder::texEscape($param['data']['id']); ?> &
+	{\textbf{Status}} & <?= TexBuilder::texEscape($param['data']['uname']); ?> \\ \specialrule{.4pt}{0pt}{0pt}
+{\textbf{Bemerkung}} & \multicolumn{3}{l}{<?= TexBuilder::texEscape($param['data']['be']); ?>} \\ \specialrule{.4pt}{0pt}{0pt}
+*/ ?>
+
+\specialrule{.8pt}{0pt}{4pt}
+\end{tabular}
+%\label{tab:addlabel}%
+\end{table}%
+\egroup
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%  LOG
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bgroup
+\def\arraystretch{1.3}
+\setlength\tabcolsep{1mm}
+\definecolor{Gray}{gray}{0.25}
+\begin{table}[!htbp]
+\centering
+%\caption{Add caption}
+\begin{tabular}{p{2.7em}p{4.7em}p{7.2em}p{29.6em}}
+\toprule
+\rowcolor{Gray}
+\multicolumn{4}{c}{\textcolor{white}{\textbf{<?= TexBuilder::texEscape('Letzte 4 Logeinträge') ?>}}}  \\ \specialrule{.4pt}{0pt}{0pt}
+
+<?php
+	if (isset($param['log']) && count($param['log']) > 0){
+		foreach ($param['log'] as $l) {
+			echo "\n ".TexBuilder::texEscape($l['id']).' & \scriptsize{\specialcell{'.date_create($l['date'])->format('d.m.Y').'\\\\'.date_create($l['date'])->format('H:i').'}} & '.TexBuilder::texEscape($l['wer']).' & '.TexBuilder::texEscape($l['was']);
+			echo ' \\\\ \specialrule{.4pt}{0pt}{0pt}';
+		}
+	} else {
+		echo '\multicolumn{4}{c}{Keine Einträge vorhanden}';
+	}
+?>
+
+\specialrule{.8pt}{0pt}{4pt}
+\end{tabular}
+%\label{tab:addlabel}%
+\end{table}%
+\egroup
+
+
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  DOCUMENT END
+%% - - - - - - - - - - - - - - - - - - -
+
+\end{document}
