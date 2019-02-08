@@ -119,14 +119,13 @@
 ~\\\vspace*{-11mm}\\
 %
 %% - - - - - - - - - - - - - - - - - - -
-%  TABLE Header
+%  ITEM INFO
 %% - - - - - - - - - - - - - - - - - - -
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%  ITEM
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  TABLE Header
+%% - - - - - - - - - - - - - - - - - - -
 
 \bgroup
 \def\arraystretch{1.5}
@@ -209,17 +208,21 @@
 {\textbf{Bemerkung}} & \multicolumn{3}{l}{<?= TexBuilder::texEscape($param['data']['be']); ?>} \\ \specialrule{.4pt}{0pt}{0pt}
 */ ?>
 
+%
+%% - - - - - - - - - - - - - - - - - - -
+%  TABLE Footer
+%% - - - - - - - - - - - - - - - - - - -
+
 \specialrule{.8pt}{0pt}{4pt}
 \end{tabular}
 %\label{tab:addlabel}%
 \end{table}%
 \egroup
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
+%
+%% - - - - - - - - - - - - - - - - - - -
 %  LOG
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% - - - - - - - - - - - - - - - - - - -
 \bgroup
 \def\arraystretch{1.3}
 \setlength\tabcolsep{1mm}
@@ -239,7 +242,7 @@
 			echo ' \\\\ \specialrule{.4pt}{0pt}{0pt}';
 		}
 	} else {
-		echo '\multicolumn{4}{c}{Keine Einträge vorhanden}';
+		echo '\multicolumn{4}{p{177.6mm}}{Keine Einträge vorhanden}\\\\';
 	}
 ?>
 
