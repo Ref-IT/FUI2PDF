@@ -446,7 +446,7 @@ class Validator{
                 return !$this->setError(true, 200, $msg, 'text validation failed - too short');
             }
             if (isset($params['maxlength']) && $params['maxlength'] != -1 && strlen($s) > $params['maxlength']){
-                $msg = "The text is too long (Maximum length: {$params['maxlength']})";
+				$msg = "The text is too long (Maximum length: {$params['maxlength']} - strlenght : " . strlen($s);
                 if (isset($params['error'])) $msg = $params['error'];
                 return !$this->setError(true, 200, $msg, 'text validation failed - too long');
             }
@@ -712,7 +712,7 @@ class Validator{
         if (in_array('lower', $params, true)){
             $v = strtolower($v);
         }
-        if (isset($params['maxlength']) && strlen($v) >= $params['maxlength']){
+		if (isset($params['maxlength']) && strlen($v) > $params['maxlength']){
             $msg = "String is too long (Maximum length: {$params['maxlength']})";
             return !$this->setError(true, 200, $msg);
         }
@@ -721,7 +721,7 @@ class Validator{
             return !$this->setError(true, 200, $msg);
         }
         $re = $params['pattern'];
-        if (!preg_match($re, $v) || (isset($params['maxlength']) && strlen($v) >= $params['maxlength'])){
+		if (!preg_match($re, $v) || (isset($params['maxlength']) && strlen($v) > $params['maxlength'])){
             $msg = ((isset($params['errorkey'])) ? $params['errorkey'] : 'regex') . ' validation failed';
             if (isset($params['error'])) $msg = $params['error'];
             return !$this->setError(true, 200, $msg, $msg);

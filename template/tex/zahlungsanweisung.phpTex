@@ -105,11 +105,12 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 
 \begin{enumerate}[label=\Roman*]
 \itemsep-2mm
-\item \textbf{Projekt ID}\hfill IP-<?= TexBuilder::texEscape($param['projekt-create']) ?>-<?= TexBuilder::texEscape($param["projekt-id"]) ?>
+\item \textbf{Projekt ID}\hfill <?= TexBuilder::texEscape($param["short-type-projekt"]) ?>-%
+<?= TexBuilder::texEscape($param['projekt-create']) ?>-<?= TexBuilder::texEscape($param["projekt-id"]) ?>
 \item \textbf{Projekt}\hfill <?= TexBuilder::texEscape($param["projekt-name"]) ?>
 \item \textbf{Organisation} \hfill <?= TexBuilder::texEscape($param["projekt-org"]) ?>
 \item \textbf{Rechtsgrundlage} \hfill <?= TexBuilder::texEscape($param["projekt-recht"]) ?>
-\item \textbf{Abrechnungs ID}\hfill A<?= TexBuilder::texEscape($param["auslage-id"]) ?>
+\item \textbf{Abrechnungs ID}\hfill <?= TexBuilder::texEscape($param["short-type-auslage"] . $param["auslage-id"]) ?>
 \item \textbf{Name Abrechnung} \hfill <?= TexBuilder::texEscape($param["auslage-name"]) ?>
 \end{enumerate}
 
@@ -149,16 +150,18 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \begin{tabular}{rrrrr}
 \textbf{Beleg} & \textbf{Einnahme} & \textbf{Ausgabe} & \textbf{Titel} & \textbf{Buchungsnummer}\\ % Buchungsnummer per Hand
 <?php foreach ($param['details'] as $row){
-    echo TexBuilder::texEscape($row["beleg-id"]) . "&";
-    echo TexBuilder::texEscape($row["einnahmen"]) . "&";
-    echo TexBuilder::texEscape($row["ausgaben"]) . "&";
-    echo TexBuilder::texEscape($row["titel"]) . "&";
-    echo TexBuilder::texEscape("________________") . "\\\\";
+	echo TexBuilder::texEscape($row["beleg-id"]) . "&";
+	echo TexBuilder::texEscape($row["einnahmen"]) . "&";
+	echo TexBuilder::texEscape($row["ausgaben"]) . "&";
+	echo TexBuilder::texEscape($row["titel"]) . "&";
+	echo TexBuilder::texEscape("________________") . "\\\\";
 } ?>
 \end{tabular}
 \end{center}
 \vspace{1cm}
-\textbf{Angewiesen am:} \_\_\_\_.\_\_\_\_.\_\_\_\_\_\_\_\_\\\\
+\textbf{Angewiesen am:} <?= TexBuilder::texEscape(
+	isset($param["angewiesen-date"]) ? $param["angewiesen-date"] : "____.____.________"
+) ?>\\\\
 \textbf{Gebucht am:} \_\_\_\_.\_\_\_\_.\_\_\_\_\_\_\_\_\\
 
 \vspace{0,5cm}

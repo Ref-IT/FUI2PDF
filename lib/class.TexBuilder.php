@@ -225,7 +225,13 @@ class TexBuilder{
             ],
         ],
         'zahlungsanweisung' => [
-            'projekt-id' => ['id'],
+            'short-type-projekt' => [
+                'regex',
+                'pattern' => '/[A-Z]{2}/',
+                'maxlength' => '2',
+                'error' => 'Kein short-type-projekt',
+            ],
+            'projekt-id' => ["id",],
             'projekt-name' => ['text'],
             'projekt-org' => ['text'],
             'projekt-recht' => ['regex',
@@ -237,6 +243,12 @@ class TexBuilder{
                 'format' => 'Y-m-d H:i:s',
                 'parse' => 'y',
                 'error' => 'Kein Erstellungsdatum des Projektes',
+            ],
+            'short-type-auslage' => [
+                'regex',
+                'pattern' => '/[A-Z]/',
+                'maxlength' => '1',
+                'error' => 'Kein short-type-auslage',
             ],
             'auslage-id' => ['id'],
             'auslage-name' => ['text'],
@@ -254,6 +266,13 @@ class TexBuilder{
                 'error' => 'Ungültiger Value'
             ],
             'zahlung-adresse' => ['text'],
+            'angewiesen-date' => [
+                'date',
+                'optional',
+                'format' => 'Y-m-d H:i:s',
+                'parse' => 'd.m.Y',
+                'error' => 'angewiesen-date ist falsch.',
+            ],
             'details' => ['array',
                 'optional',
                 'empty',
