@@ -1168,7 +1168,7 @@ class Validator {
 			$this->filtered = $p;
 			return !$this->setError(false);
 		}
-		if (isset($params['maxlength']) && strlen($p) >= $params['maxlength']){
+		if (isset($params['maxlength']) && strlen($p) > $params['maxlength']){
 			$msg = "The password is too long (Maximum length: {$params['maxlength']})";
 			if (isset($params['error'])) $msg = $params['error'];
 			return !$this->setError(true, 200, $msg);
