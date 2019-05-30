@@ -468,7 +468,7 @@ class Validator {
 				return !$this->setError(true, 200, $msg, 'text validation failed - too short');
 			}
 			if (isset($params['maxlength']) && $params['maxlength'] != -1 && strlen($s) > $params['maxlength']){
-				$msg = "The text is too long (Maximum length: {$params['maxlength']})";
+				$msg = "The text is too long (Maximum length: {$params['maxlength']} - strlenght : " . strlen($s);
 				if (isset($params['error'])) $msg = $params['error'];
 				return !$this->setError(true, 200, $msg, 'text validation failed - too long');
 			}
