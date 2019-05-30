@@ -13,58 +13,70 @@ class TexBuilder{
      */
     private static $valiMap = [
         'belegpdf' => [
-            'projekt' => ['arraymap',
+            'projekt' => [
+                'arraymap',
                 'required' => true,
                 'map' => [
-                    'created' => ['date',
+                    'created' => [
+                        'date',
                         'format' => 'Y-m-d H:i:s',
                         'parse' => 'Y-m-d H:i:s',
                         'error' => 'Ungültiges Projekt Datum.'
                     ],
-                    'name' => ['regex',
+                    'name' => [
+                        'regex',
                         'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                         'maxlength' => '255',
                         'empty',
                         'error' => 'Ungültiger Projekt Name.'
                     ],
-                    'org' => ['regex',
+                    'org' => [
+                        'regex',
                         'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                         'maxlength' => '255',
                         'empty',
                         'error' => 'Ungültiger Organisations Name.'
                     ],
-                    'id' => ['integer',
+                    'id' => [
+                        'integer',
                         'min' => '1',
                         'error' => 'Ungültige Projekt ID.'
                     ],
                 ],
             ],
-            'auslage' => ['arraymap',
+            'auslage' => [
+                'arraymap',
                 'required' => true,
                 'map' => [
-                    'created' => ['date',
+                    'created' => [
+                        'date',
                         'format' => 'Y-m-d H:i:s',
                         'parse' => 'Y-m-d H:i:s',
                         'error' => 'Ungültiges Auslagen Datum.'
                     ],
-                    'created_by' => ['name',
+                    'created_by' => [
+                        'name',
                         'maxlength' => '255',
                         'error' => 'Ungültiger Auslagen Name.'
                     ],
-                    'name' => ['regex',
+                    'name' => [
+                        'regex',
                         'empty',
                         'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                         'maxlength' => '255',
                         'error' => 'Ungültiger Auslagen Name.'
                     ],
-                    'id' => ['integer',
+                    'id' => [
+                        'integer',
                         'min' => '1',
                         'error' => 'Ungültige Auslagen ID.'
                     ],
-                    'zahlung' => ['arraymap',
+                    'zahlung' => [
+                        'arraymap',
                         'required' => true,
                         'map' => [
-                            'name' => ['regex',
+                            'name' => [
+                                'regex',
                                 'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                                 'maxlength' => '127',
                                 'empty',
@@ -72,7 +84,8 @@ class TexBuilder{
                             ],
                         ],
                     ],
-                    'address' => ['regex',
+                    'address' => [
+                        'regex',
                         'pattern' => '/^[a-zA-Z0-9\-_,:;\/\\\\()& \n\r\.\[\]%\'"#\*\+äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                         'empty',
                         'maxlength' => '1023',
@@ -80,36 +93,46 @@ class TexBuilder{
                     ],
                 ],
             ],
-            'belege' => ['array', 'optional',
+            'belege' => [
+                'array',
+                'optional',
                 'minlength' => 1,
-                'key' => ['regex',
+                'key' => [
+                    'regex',
                     'pattern' => '/^(\d+)$/'
                 ],
-                'validator' => ['arraymap',
+                'validator' => [
+                    'arraymap',
                     'required' => true,
                     'map' => [
-                        'id' => ['integer',
+                        'id' => [
+                            'integer',
                             'min' => '1',
                             'error' => 'Ungültige Beleg ID.'
                         ],
-                        'short' => ['integer',
+                        'short' => [
+                            'integer',
                             'min' => '1',
                             'error' => 'Ungültige Beleg NR.'
                         ],
-                        'date' => ['date',
+                        'date' => [
+                            'date',
                             'format' => 'Y-m-d H:i:s',
                             'parse' => 'Y-m-d',
                             'error' => 'Ungültiges Beleg Datum.'
                         ],
-                        'desc' => ['text',
+                        'desc' => [
+                            'text',
                             'strip',
                             'trim',
                         ],
-                        'file_id' => ['integer',
+                        'file_id' => [
+                            'integer',
                             'min' => '1',
                             'error' => 'Ungültige Beleg File ID.'
                         ],
-                        'file' => ['text',
+                        'file' => [
+                            'text',
                             'strip',
                             'trim',
                         ],
@@ -118,98 +141,120 @@ class TexBuilder{
             ],
         ],
         'gremienbescheinigung' => [
-            'vorname' => ['regex',
+            'vorname' => [
+                'regex',
                 'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                 'maxlength' => '255',
                 'empty',
                 'error' => 'Ungültiger Vorname.'
             ],
-            'name' => ['regex',
+            'name' => [
+                'regex',
                 'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                 'maxlength' => '255',
                 'empty',
                 'error' => 'Ungültiger Name.'
             ],
-            'adresse' => ['regex',
+            'adresse' => [
+                'regex',
                 'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                 'maxlength' => '255',
                 'empty',
                 'error' => 'Ungültige Adresse.'
             ],
-            'ort' => ['regex',
+            'ort' => [
+                'regex',
                 'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                 'maxlength' => '255',
                 'empty',
                 'error' => 'Ungültiger Ort.'
             ],
-            'male' => ['boolean',
+            'male' => [
+                'boolean',
                 'error' => 'Wert für male.'
             ],
-            'geburtsdatum' => ['date',
+            'geburtsdatum' => [
+                'date',
                 'format' => 'd.m.Y',
                 'error' => 'Ungültiges Geburtsdatum.'
             ],
-            'date' => ['date',
+            'date' => [
+                'date',
                 'format' => 'd.m.Y',
                 'error' => 'Ungültiges Datum.'
             ],
-            'sum' => ['integer',
+            'sum' => [
+                'integer',
                 'min' => 0,
                 'error' => 'Ungültige Summe'
             ],
-            'smallest' => ['regex',
+            'smallest' => [
+                'regex',
                 'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                 'maxlength' => '255',
                 'error' => "Ungültiges Datum 'smallest'."
             ],
-            'biggest' => ['regex',
+            'biggest' => [
+                'regex',
                 'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                 'maxlength' => '255',
                 'error' => "Ungültiges Datum 'biggest'."
             ],
-            'konsul' => ['regex',
+            'konsul' => [
+                'regex',
                 'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                 'maxlength' => '255',
                 'error' => "Ungültiger Konsul name."
             ],
-            'skills' => ['array',
-                'validator' => ['regex',
+            'skills' => [
+                'array',
+                'validator' => [
+                    'regex',
                     'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                     'maxlength' => '500',
                     'error' => "Ungültiger Skill."
                 ],
             ],
-            'arbeit' => ['array',
+            'arbeit' => [
+                'array',
                 'empty',
-                'validator' => ['arraymap',
+                'validator' => [
+                    'arraymap',
                     'required' => true,
                     'map' => [
-                        'checked' => ['integer',
+                        'checked' => [
+                            'integer',
                             'min' => '0',
                             'error' => 'Some id checking error.'
                         ],
-                        'von' => ['date',
+                        'von' => [
+                            'date',
                             'format' => 'Y-m-d',
                             'error' => 'Ungültiges "von" Datum.'
                         ],
-                        'bis' => ['date',
+                        'bis' => [
+                            'date',
                             'empty',
                             'format' => 'Y-m-d',
                             'error' => 'Ungültiges "bis" Datum.'
                         ],
-                        'position' => ['text',
+                        'position' => [
+                            'text',
                             'strip',
                             'trim',
                         ],
-                        'gremium' => ['text',
+                        'gremium' => [
+                            'text',
                             'strip',
                             'trim',
                         ],
-                        'h' => ['integer',
+                        'h' => [
+                            'integer',
                             'min' => '0',
                             'error' => 'Ungültige Stunden Zahl.'
                         ],
-                        'type' => ['regex',
+                        'type' => [
+                            'regex',
                             'pattern' => '#^h(/W|/S)?$#',
                             'maxlength' => '4',
                             'error' => "Ungültiger type name."
@@ -217,37 +262,55 @@ class TexBuilder{
                     ]
                 ]
             ],
-            'additional-text' => ['text',
+            'additional-text' => [
+                'text',
                 'empty',
                 'strip',
                 'trim',
             ],
         ],
         'zahlungsanweisung' => [
+             'short-type-projekt' => [
+                 'regex',
+                 'pattern' => '/[A-Z]{2}/',
+                 'maxlength' => '2',
+                 'error' => 'Kein short-type-projekt',
+             ],
             'projekt-id' => ['id'],
             'projekt-name' => ['text'],
             'projekt-org' => ['text'],
-            'projekt-recht' => ['regex',
+            'projekt-recht' => [
+                'regex',
                 'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                 'maxlength' => '255',
                 'error' => 'Ungültiges Recht.'
             ],
-            'projekt-create' => ['date',
+            'projekt-create' => [
+                'date',
                 'format' => 'Y-m-d H:i:s',
                 'parse' => 'y',
                 'error' => 'Kein Erstellungsdatum des Projektes',
             ],
+            'short-type-auslage' => [
+                'regex',
+                'pattern' => '/[A-Z]/',
+                'maxlength' => '1',
+                'error' => 'Kein short-type-auslage',
+            ],
             'auslage-id' => ['id'],
             'auslage-name' => ['text'],
-            'zahlung-name' => ['regex',
+            'zahlung-name' => [
+                'regex',
                 'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
                 'maxlength' => '255',
                 'error' => 'Ungültiger Empfänger Name.'
             ],
-            'zahlung-iban' => ['iban',
+            'zahlung-iban' => [
+                'iban',
 				'empty',
             ],
-            'zahlung-value' => ['float',
+            'zahlung-value' => [
+                'float',
                 'format' => '2',
                 'decimal' => '.',
                 'parse' => [
@@ -256,24 +319,39 @@ class TexBuilder{
                 'error' => 'Ungültiger Value'
             ],
             'zahlung-adresse' => ['text'],
-            'details' => ['array',
+            'angewiesen-date' => [
+                'date',
+                'optional',
+                'format' => 'Y-m-d H:i:s',
+                'parse' => 'd.m.Y',
+                'error' => 'angewiesen-date ist falsch.',
+            ],
+            'details' => [
+                'array',
                 'optional',
                 'empty',
                 //'minlength' => 1,
-                'key' => ['regex',
+                'key' => [
+                    'regex',
                     'pattern' => '/^(\d+)$/'
                 ],
-                'validator' => ['arraymap',
+                'validator' => [
+                    'arraymap',
                     'required' => true,
                     'map' => [
-                        'beleg-id' => ["text"
+                        'beleg-id' => [
+                            'text'
                         ],
-                        'titel' => ['text', 'trim', 'regex',
+                        'titel' => [
+                            'text', 
+                            'trim',
+                            'regex',
                             'pattern' => '/^[0-9 ]*$/',
                             'maxlength' => '255',
                             'error' => 'Ungültiger Titel'
                         ],
-                        'einnahmen' => ['float',
+                        'einnahmen' => [
+                            'float',
                             'min' => '0',
                             'format' => '2',
                             'decimal' => '.',
@@ -282,7 +360,8 @@ class TexBuilder{
                             ],
                             'error' => 'Ungültige Einnahme'
                         ],
-                        'ausgaben' => ['float',
+                        'ausgaben' => [
+                            'float',
                             'min' => '0',
                             'format' => '2',
                             'decimal' => '.',
@@ -296,55 +375,65 @@ class TexBuilder{
             ]
         ],
         'protocolmemberlist' => [
-            'date' => ['date',
+            'date' => [
+                'date',
                 'format' => 'Y-m-d',
                 'parse' => 'd.m.Y',
                 'error' => 'Kein Datum angegeben',
             ],
-			'leitung' => ['regex',
+			'leitung' => [
+                'regex',
 				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 				'maxlength' => 255,
 				'minlength' => 2,
 				'empty',
 				'error' => 'Ungültige Sitzungsleitung.'
 			],
-			'protocol' => ['regex',
+			'protocol' => [
+                'regex',
 				'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 				'maxlength' => 255,
 				'minlength' => 2,
 				'empty',
 				'error' => 'Ungültige Protokollleitung.'
 			],
-			'nth' => ['integer',
+			'nth' => [
+                'integer',
 				'min' => 1,
 				'empty',
 				'error' => 'Ungültiger NTH Eintrag.'
 			],
-			'legislatur' => ['integer',
+			'legislatur' => [
+                'integer',
 				'min' => 1,
 				'error' => 'Ungültige Legislatur.'
 			],
-            'member_elected' => [ 'array',
+            'member_elected' => [
+                'array',
 				'optional',
                 'empty',
                 'error' => 'Missing key member_elected',
-				'validator' => [ 'arraymap',
+				'validator' => [ 
+                    'arraymap',
 					'required' => true,
 					'map' => [
-						'name' => [ 'regex',
+						'name' => [ 
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => 255,
 							'minlength' => 2,
 							'error' => 'Ungültiger Name.'
 						],
-						'job' => [ 'regex',
+						'job' => [
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => 255,
 							'minlength' => 2,
                             'empty',
 							'error' => 'Ungültiger Job.'
 						],
-						'text' => [ 'regex',
+						'text' => [
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => '255',
 							'empty',
@@ -353,27 +442,32 @@ class TexBuilder{
                     ]
                 ],
             ],
-            'member_active' => [ 'array',
+            'member_active' => [
+                'array',
 				'optional',
 				'empty',
 				'error' => 'Missing key member_active',
-				'validator' => [ 'arraymap',
+				'validator' => [ 
+                    'arraymap',
 					'required' => true,
 					'map' => [
-						'name' => [ 'regex',
+						'name' => [ 
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => 255,
 							'minlength' => 2,
 							'error' => 'Ungültiger Name.'
 						],
-						'job' => [ 'regex',
+						'job' => [ 
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => 255,
 							'minlength' => 2,
 							'empty',
 							'error' => 'Ungültiger Job.'
 						],
-						'text' => [ 'regex',
+						'text' => [ 
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => '255',
 							'empty',
@@ -382,27 +476,32 @@ class TexBuilder{
 					]
 				],
             ],
-            'member_ref' => [ 'array',
+            'member_ref' => [ 
+                'array',
 				'optional',
 				'empty',
 				'error' => 'Missing key member_ref',
-				'validator' => [ 'arraymap',
+				'validator' => [ 
+                    'arraymap',
 					'required' => true,
 					'map' => [
-						'name' => [ 'regex',
+						'name' => [ 
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => 255,
 							'minlength' => 2,
 							'error' => 'Ungültiger Name.'
 						],
-						'job' => [ 'regex',
+						'job' => [ 
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => 255,
 							'minlength' => 2,
 							'empty',
 							'error' => 'Ungültiger Job.'
 						],
-						'text' => [ 'regex',
+						'text' => [ 
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => '255',
 							'empty',
@@ -411,27 +510,32 @@ class TexBuilder{
 					]
 				],
             ],
-            'member_stuff' => [ 'array',
+            'member_stuff' => [ 
+                'array',
 				'optional',
 				'empty',
 				'error' => 'Missing key member_stuff',
-				'validator' => [ 'arraymap',
+				'validator' => [ 
+                    'arraymap',
 					'required' => true,
 					'map' => [
-						'name' => ['regex',
+						'name' => [
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => 255,
 							'minlength' => 2,
 							'error' => 'Ungültiger Name.'
 						],
-						'job' => ['regex',
+						'job' => [
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => 255,
 							'minlength' => 2,
 							'empty',
 							'error' => 'Ungültiger Job.'
 						],
-						'text' => ['regex',
+						'text' => [
+                            'regex',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => '255',
 							'empty',
@@ -442,100 +546,129 @@ class TexBuilder{
             ],
         ],
 		'inventorylist' => [
-			'date' => ['date',
+			'date' => [
+                'date',
 				'format' => 'Y-m-d',
 				'parse' => 'd.m.Y',
 				'error' => 'Kein Datum angegeben',
 			],
-			'header' => [ 'array',
+			'header' => [ 
+                'array',
 				'empty',
-				'validator' => [ 'arraymap',
+				'validator' => [ 
+                    'arraymap',
 					'required' => true,
 					'map' => [
-						'title' => ['regex',
+						'title' => [
+                            'regex',
 							'empty',
 							'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 							'maxlength' => 255,
 							'minlength' => 0,
 							'error' => 'Ungültiger Titel.'
 						],
-						'date' => ['regex', 'optional',
+						'date' => [
+                            'regex', 
+                            'optional',
 							'pattern' => '/^([0-9a-zA-Z_ :,\.\-\/])+$/',
 							'maxlength' => 255,
 							'minlength' => 1,
 							'empty',
 							'error' => 'Ungültiges Datumformat.'
 						],
-						'table_format' => ['regex', 'optional',
+						'table_format' => [
+                            'regex', 
+                            'optional',
 							'pattern' => '/^([a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()\{\}])*$/',
 							'maxlength' => '255',
 							'empty',
 							'error' => 'Ungültiges Tabellen format.'
 						],
-						'center' => [ 'integer', 'optional',
+						'center' => [ 
+                            'integer', 
+                            'optional',
 							'min' => 1,
 							'max' => 1,
 							'error' => 'Ungültiges flag "center"',
 						],
 					],
 				],
-				'key' => ['regex',
+				'key' => [
+                    'regex',
 					'pattern' => '/^[a-zA-Z0-9\-_ :,;%$§\&\+\*\.!\?\/\\\[\]\'"#~()äöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß]*$/',
 					'maxlength' => 255,
 					'minlength' => 1,
 					'error' => 'Ungültiger headerkey Eintrag.'
 				]
 			],
-			'items' => [ 'array',
+			'items' => [ 
+                'array',
 				'pre_json_decode',
 				'empty',
 				'false',
 				'error' => 'Ungültiger items Eintrag.'
 			],
-			'modifier' => ['array', 'optional',
+			'modifier' => [
+                'array', 
+                'optional',
 				'empty',
 			],
 		],
 		'inventorydetail' => [
-			'date' => ['date',
+			'date' => [
+                'date',
 				'format' => 'Y-m-d',
 				'parse' => 'd.m.Y',
 				'error' => 'Kein Datum angegeben',
 			],
-			'filedata' => [ 'array', 'optional',
+			'filedata' => [ 
+                'array', 
+                'optional',
 				'empty',
-				'validator' => [ 'arraymap',
+				'validator' => [ 
+                    'arraymap',
 					'required' => true,
 					'map' => [
-						'data' => ['text',
+						'data' => [
+                            'text',
 							'strip',
 							'trim',
 						],
 					],
 				],
 			],
-			'data' => [ 'array',
+			'data' => [ 
+                'array',
 				'empty',
 				'required' => true,
 			],
-			'log' => [ 'array', 'optional',
+			'log' => [ 
+                'array', 
+                'optional',
 				'empty',
-				'validator' => [ 'arraymap',
+				'validator' => [ 
+                    'arraymap',
 					'required' => true,
 					'map' => [
-						'id' 			=> [ 'integer',
+						'id' 			=> [ 
+                            'integer',
 							'min' => '1',
-							'error' => 'id' ],
-						'date' => [ 'date',
+							'error' => 'id' 
+                        ],
+						'date' => [ 
+                            'date',
 							'format' => 'Y-m-d H:i:s',
 							'error' => 'date'
 						],
-						'wer' 	=> ['regex',
+						'wer' 	=> [
+                            'regex',
 							'pattern' => '/^((^| )([.a-zA-ZäöüÄÖÜéèêóòôáàâíìîúùûÉÈÊÓÒÔÁÀÂÍÌÎÚÙÛß0-9#!?\-\.,:;_+\*\(\)\[\]\|\/\\\\]+))+$/',
 							'empty',
 							'maxlength' => 255,
-							'error' => 'Invalid name' ],
-						'was' => ['regex',
+							'error' => 'Invalid name' 
+                        ],
+						'was' => [
+                            'regex',
 							'pattern' => '/( |\n|.)*/',
 							'error' => 'Invalid note - Invalid letters?'
 						],
@@ -591,8 +724,8 @@ class TexBuilder{
      */
     public static function texEscape($in){
         return str_replace(
-            ['\\', '~', '_', '%', '$', '&', '^', '"', '{', '}', '#', '€'],
-            ['\textbackslash', '\textasciitilde', '\_', '\%', '\$', '\&', '^', "''", '\{', '\}', '\#', '\EUR'],
+            ['\\', '~', '_', '%', '$', '&', '^', '"', '{', '}', '#', '€', 'ẞ'],
+            ['\textbackslash', '\textasciitilde', '\_', '\%', '\$', '\&', '^', "''", '\{', '\}', '\#', '\EUR', 'ß'],
             $in
         );
     }
@@ -737,6 +870,7 @@ class TexBuilder{
      *
      * @param string $key
      * @param array  $param
+     *
 	 * @return string
      */
     private static function _renderTex($key, $param){
@@ -814,6 +948,7 @@ class TexBuilder{
      * get pdf as base64 string
      *
      * @param bool $echo
+     *
      * @return string
      */
     public function getBase64($echo = false){
@@ -829,6 +964,7 @@ class TexBuilder{
      * get binary pdf data
      *
      * @param bool $echo
+     *
      * @return binary|NULL
      */
     public function getBinary($echo = false){
