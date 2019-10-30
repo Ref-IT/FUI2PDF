@@ -724,7 +724,7 @@ class TexBuilder{
      */
     public static function texEscape($in){
         return str_replace(
-            ['\\', '~', '_', '%', '$', '&', '^', '"', '{', '}', '#', '€', 'ẞ'],
+            ["\\", '~', '_', '%', '$', '&', '^', '"', '{', '}', '#', '€', 'ẞ'],
             ['\textbackslash', '\textasciitilde', '\_', '\%', '\$', '\&', '^', "''", '\{', '\}', '\#', '\EUR', 'ß'],
             $in
         );

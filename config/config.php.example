@@ -1,0 +1,43 @@
+<?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
+$conf = [
+	"AuthBasicHandler" => [
+		'BASICUSER' => [
+			'cron' => [
+				'password' => 'ein_Passwort_FIXME',
+				'displayName' => 'Ein Anzeigename',
+				'mail' => 'mail@example.org_FIXME',
+				'groups' => ['basic', 'pdfbuilder'],
+				'eduPersonPrincipalName' => ['cronuser'],
+			],
+		]
+	],
+];
+
+define('URIBASE', '/FIXME/public/');
+define('BASE_TITLE', 'FUI2PDF');
+define('BASE_URL', $_SERVER["SERVER_NAME"]);
+define('API_KEY', "FIXME");
+define('ALLOWED_IPS', ["FIX.FIX.FIX.FIXME"]);
+
+/**
+ * set php error settings
+ */
+define('DEBUG', 1);
+define('DEBUG_DO_NOT_DELETE__TEX_PDF', false);
+ini_set('display_errors', (DEBUG)? 1:0);
+ini_set('display_startup_errors', (DEBUG)? 1:0);
+ini_set("log_errors", 1);
+ini_set("error_log", dirname(__FILE__, 2 )."/logs/error.log");
+error_reporting(E_ALL);
+define('SHELL_LATEX_COMMAND', '/usr/bin/pdflatex');
+
+if (DEBUG){
+    ini_set('xdebug.var_display_max_depth', 5);
+    ini_set('xdebug.var_display_max_children', 256);
+    ini_set('xdebug.var_display_max_data', 500);
+}
+

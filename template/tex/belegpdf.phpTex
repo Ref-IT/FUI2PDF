@@ -15,6 +15,7 @@
 \usepackage{tgheros}
 \usepackage{intcalc}
 \usepackage{setspace}
+\usepackage[left]{eurosym}
 
 \usepackage{amsmath,amssymb,amsthm,textcomp}
 %\usepackage{enumerate}
