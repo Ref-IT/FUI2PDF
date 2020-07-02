@@ -174,7 +174,8 @@ draft=off%%                Entwurfsmodus
     % Hier beginnt der Brief, mit der Anschrift des Empfängers
     \begin{letter}
     {
-    	<?= self::texEscape( ($param['male'] ? "Herrn" : "Frau"). " " . $param['vorname'] . " " . $param['name']) ?>~\\
+	<?= self::texEscape( ($param['male'] ? "Herrn" : "Frau")) ?>~\\
+    	<?= self::texEscape( $param['vorname'] . " " . $param['name']) ?>~\\
         <?= self::texEscape($param['adresse']) ?>~\\
         <?= self::texEscape($param['ort']) ?>}%
         %---------------------------------------------------------------------------
