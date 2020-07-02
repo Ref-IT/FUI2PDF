@@ -146,7 +146,6 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \item \textbf{Erstellt} \hfill <?= self::texEscape($param['auslage']['created']) ?>
 \item \textbf{Eingereicht von} \hfill <?= self::texEscape($param['auslage']['created_by']) ?>
 \item \textbf{Zahlung An} \hfill <?= self::texEscape($param['auslage']['zahlung']['name']) ?>
-\item \textbf{Addresse} \hfill <?= self::texEscape($param['auslage']['address']) ?>
 \end{enumerate}
 
 \mysection{Versicherung}

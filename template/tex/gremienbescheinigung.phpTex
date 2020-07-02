@@ -174,13 +174,13 @@ draft=off%%                Entwurfsmodus
     % Hier beginnt der Brief, mit der Anschrift des Empfängers
     \begin{letter}
     {
-    	<?= self::texEscape($param['vorname'] . " " . $param['name']) ?>~\\
+    	<?= self::texEscape( ($param['male'] ? "Herrn" : "Frau"). " " . $param['vorname'] . " " . $param['name']) ?>~\\
         <?= self::texEscape($param['adresse']) ?>~\\
         <?= self::texEscape($param['ort']) ?>}%
         %---------------------------------------------------------------------------
         % Der Betreff des Briefes
         %---------------------------------------------------------------------------
-        \opening{für <?= self::texEscape(($param['male'] ? "Herr" : "Frau") . " " . $param['vorname'] . " " . $param['name']) ?>, geboren am <?= self::texEscape($param['geburtsdatum']) ?>. <?= self::texEscape(($param['male'] ? "Er" : "Sie")) ?> war wie folgt ehrenamtlich aktiv:}
+        \opening{für <?= self::texEscape(($param['male'] ? "Herrn" : "Frau") . " " . $param['vorname'] . " " . $param['name']) ?>, geboren am <?= self::texEscape($param['geburtsdatum']) ?>. <?= self::texEscape(($param['male'] ? "Er" : "Sie")) ?> war wie folgt ehrenamtlich aktiv:}
         
         \begin{longtable}{p{1.65cm}p{1.65cm}p{4.3cm}p{4.2cm}p{1.9cm}}
         	\textbf{von}&\textbf{bis}&\textbf{Position}&\textbf{Gremium/Organ}&\textbf{Umfang} \\
